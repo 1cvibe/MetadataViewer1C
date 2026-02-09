@@ -1,0 +1,104 @@
+#webview-body {
+  display: flex;
+  flex-direction: column;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: 26px;
+}
+
+.header {
+  color: var(--vscode-settings-headerForeground);
+  background-color: var(--vscode-settings-focusedRowBackground);
+  font-size: 22px;
+  font-weight: 600;
+  padding: 10px 10px 10px 15px;
+}
+
+.column-container {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+  padding: 1rem;
+}
+
+.parameter-container {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px 18px;
+  line-height: 1.4em!important;
+  outline-offset: -1px;
+}
+
+.parameter-container:hover {
+  background-color: var(--vscode-settings-rowHoverBackground);
+}
+
+.parameter-container vscode-dropdown {
+  width: 320px;
+}
+
+.label {
+  margin-top: 0.5rem;
+  margin-bottom: 0px;
+  font-weight: 600;
+}
+
+.description {
+  margin-top: -1px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.parameter-list {
+  margin-bottom: 1px;
+}
+
+.parameter-list-item {
+  display: flex;
+  min-height: 24px;
+  line-height: 24px;
+}
+
+.parameter-list-item:hover {
+  background-color: var(--vscode-settings-rowHoverBackground);
+}
+
+.parameter-list-item-text {
+  margin-left: 4px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.parameter-button {
+  margin-top: 4px;
+}
+
+#add-purpose vscode-dropdown {
+  height: 24px;
+}
+
+.add-cancel-button {
+  margin-right: 4px;
+  height: 24px;
+}
+
+vscode-dropdown {
+  margin-top: 2px;
+  margin-right: 4px;
+}
+
+vscode-dropdown[readonly] {
+  pointer-events: none;
+}
+
+.hidden {
+  display: none;
+}
+
+@media screen and (min-width: 1024px) {
+  #webview-body {
+    padding: 0 8rem;
+    max-width: 1024px;
+    margin: 0 auto;
+  }
+}

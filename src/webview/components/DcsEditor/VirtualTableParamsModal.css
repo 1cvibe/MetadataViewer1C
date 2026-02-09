@@ -1,0 +1,98 @@
+.vt-modal__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vt-modal {
+  width: min(520px, calc(100vw - 48px));
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.vt-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.vt-modal__title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.vt-modal__close {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+}
+
+.vt-modal__body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vt-modal__row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.vt-modal__label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.vt-modal__field {
+  min-width: 0;
+}
+
+.vt-modal__input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+}
+
+.vt-modal__condition {
+  display: flex;
+  gap: 8px;
+}
+
+.vt-modal__btn {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  padding: 6px 10px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+}
+
+.vt-modal__btn--primary {
+  background: #0e639c;
+  border-color: rgba(14, 99, 156, 0.8);
+  color: white;
+}
+
+.vt-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}

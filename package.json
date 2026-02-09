@@ -1,0 +1,462 @@
+{
+	"name": "cursor-1c-metadata-viewer",
+	"displayName": "1C Metadata Viewer",
+	"description": "Explore 1C:Enterprise 8 configuration in the usual way",
+	"version": "2.9.8",
+	"publisher": "whiterabbit",
+	"license": "MIT",
+	"author": {
+    "name": "Andrey Ponomarev",
+    "email": "",
+    "url": ""
+  	},
+  	"contributors": [
+    ""
+  	],
+  	"icon": "resources/1c-icon.png",
+	"engines": {
+		"vscode": "^1.56.0"
+	},
+	"sideEffects": false,
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"metadata",
+		"1C (BSL)",
+		"1C:Enterprise"
+	],
+	"activationEvents": [
+		"onStartupFinished",
+		"onView:metadataView",
+		"onLanguage:bsl",
+		"onCommand:metadataViewer.genFromComment",
+		"onCommand:metadataViewer.genFromCommentPrompt",
+		"onCommand:metadataViewer.settings",
+		"onCommand:metadataViewer.openDcsEditor"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"views": {
+			"explorer": [
+				{
+					"id": "metadataView",
+					"name": "1C Metadata Viewer"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "metadataViewer.settings",
+				"title": "%1c-metadata-viewer.settings.title%",
+				"icon": "$(gear)"
+			},
+			{
+				"command": "metadataViewer.openAppModule",
+				"title": "%1c-metadata-viewer.openManagedApplicationModule.title%"
+			},
+			{
+				"command": "metadataViewer.openSessionModule",
+				"title": "%1c-metadata-viewer.openSessionModule.title%"
+			},
+			{
+				"command": "metadataViewer.openExternalConnectionModule",
+				"title": "%1c-metadata-viewer.openExternalConnectionModule.title%"
+			},
+			{
+				"command": "metadataViewer.openObjectModule",
+				"title": "%1c-metadata-viewer.openObjectModule.title%",
+				"icon": {
+					"dark": "resources/dark/editObject.svg",
+					"light": "resources/light/editObject.svg"
+				}
+			},
+			{
+				"command": "metadataViewer.openManagerModule",
+				"title": "%1c-metadata-viewer.openManagerModule.title%",
+				"icon": {
+					"dark": "resources/dark/editManager.svg",
+					"light": "resources/light/editManager.svg"
+				}
+			},
+			{
+				"command": "metadataViewer.openForm",
+				"title": "%1c-metadata-viewer.openForm.title%"
+			},
+			{
+				"command": "metadataViewer.previewForm",
+				"title": "%1c-metadata-viewer.previewForm.title%"
+			},
+			{
+				"command": "metadataViewer.openDcsEditor",
+				"title": "%1c-metadata-viewer.openDcsEditor.title%"
+			},
+			{
+				"command": "metadataViewer.openModule",
+				"title": "%1c-metadata-viewer.openModule.title%"
+			},
+			{
+				"command": "metadataViewer.openCommandModule",
+				"title": "%1c-metadata-viewer.openCommandModule.title%"
+			},
+			{
+				"command": "metadataViewer.openRecordSetModule",
+				"title": "%1c-metadata-viewer.openRecordSetModule.title%"
+			},
+			{
+				"command": "metadataViewer.openValueManagerModule",
+				"title": "%1c-metadata-viewer.openValueManagerModule.title%"
+			},
+			{
+				"command": "metadataViewer.openXml",
+				"title": "%1c-metadata-viewer.openXml.title%"
+			},
+			{
+				"command": "metadataViewer.openPredefinedData",
+				"title": "%1c-metadata-viewer.openPredefinedData.title%"
+			},
+			{
+				"command": "metadataViewer.openHandler",
+				"title": "%1c-metadata-viewer.openHandler.title%"
+			},
+			{
+				"command": "metadataViewer.openMetadataProperties",
+				"title": "%1c-metadata-viewer.openMetadataProperties.title%"
+			},
+			{
+				"command": "metadataViewer.reindexStructure",
+				"title": "%1c-metadata-viewer.reindexStructure.title%"
+			},
+			{
+				"command": "metadataViewer.refreshObjectStructure",
+				"title": "%1c-metadata-viewer.refreshObjectStructure.title%"
+			},
+			{
+				"command": "metadataViewer.filterBySubsystem",
+				"title": "%1c-metadata-viewer.filterBySubsystem.title%"
+			},
+			{
+				"command": "metadataViewer.clearFilter",
+				"title": "%1c-metadata-viewer.clearFilter.title%"
+			},
+			{
+				"command": "metadataViewer.selectSubsystemToFilter",
+				"title": "%1c-metadata-viewer.selectSubsystemToFilter.title%"
+			},
+			{
+				"command": "metadataViewer.genFromComment",
+				"title": "%1c-metadata-viewer.genFromComment.title%"
+			},
+			{
+				"command": "metadataViewer.genFromCommentPrompt",
+				"title": "%1c-metadata-viewer.genFromCommentPrompt.title%"
+			},
+			{
+				"command": "metadataViewer.editQueryFromEditor",
+				"title": "%1c-metadata-viewer.editQueryFromEditor.title%"
+			},
+			{
+				"command": "metadataViewer.showTemplate",
+				"title": "%1c-metadata-viewer.showTemplate.title%"
+			},
+			{
+				"command": "metadataViewer.editMetadata",
+				"title": "%1c-metadata-viewer.editMetadata.title%",
+				"icon": "$(edit)"
+			},
+			{
+				"command": "metadataViewer.toggleBookmark",
+				"title": "%1c-metadata-viewer.toggleBookmark.title%",
+				"icon": "$(bookmark)"
+			},
+			{
+				"command": "metadataViewer.nextBookmark",
+				"title": "%1c-metadata-viewer.nextBookmark.title%"
+			},
+			{
+				"command": "metadataViewer.clearAllBookmarks",
+				"title": "%1c-metadata-viewer.clearAllBookmarks.title%"
+			},
+			{
+				"command": "metadataViewer.increaseIndent",
+				"title": "%1c-metadata-viewer.increaseIndent.title%"
+			},
+			{
+				"command": "metadataViewer.decreaseIndent",
+				"title": "%1c-metadata-viewer.decreaseIndent.title%"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "metadataViewer.settings",
+					"when": "view == metadataView",
+					"group": "navigation@0"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "metadataViewer.openAppModule",
+					"group": "bsl",
+					"when": "viewItem == main"
+				},
+				{
+					"command": "metadataViewer.openSessionModule",
+					"group": "bsl",
+					"when": "viewItem == main"
+				},
+				{
+					"command": "metadataViewer.openExternalConnectionModule",
+					"group": "bsl",
+					"when": "viewItem == main"
+				},
+				{
+					"command": "metadataViewer.openObjectModule",
+					"group": "inline",
+					"when": "viewItem =~ /object/"
+				},
+				{
+					"command": "metadataViewer.openManagerModule",
+					"group": "bsl",
+					"when": "viewItem =~ /manager/"
+				},
+				{
+					"command": "metadataViewer.openObjectModule",
+					"group": "bsl",
+					"when": "viewItem =~ /object/"
+				},
+				{
+					"command": "metadataViewer.openManagerModule",
+					"group": "inline",
+					"when": "viewItem =~ /manager/"
+				},
+				{
+					"command": "metadataViewer.openForm",
+					"group": "bsl",
+					"when": "viewItem == form"
+				},
+				{
+					"command": "metadataViewer.previewForm",
+					"group": "bsl",
+					"when": "viewItem == form"
+				},
+				{
+					"command": "metadataViewer.openDcsEditor",
+					"group": "edit",
+					"when": "viewItem =~ /object/"
+				},
+				{
+					"command": "metadataViewer.editMetadata",
+					"group": "inline",
+					"when": "viewItem =~ /(object|manager|recordset|valueManager|module|form|predefined)/ && !(viewItem =~ /(handler|subsystem|command|tabularSection|attribute|dimension|resource|column|value|accountingFlag|extDimensionAccountingFlag|addressingAttribute|parameter|urlTemplate|operation)/)"
+				},
+				{
+					"command": "metadataViewer.openModule",
+					"group": "bsl",
+					"when": "viewItem == module"
+				},
+				{
+					"command": "metadataViewer.openCommandModule",
+					"group": "bsl",
+					"when": "viewItem == command"
+				},
+				{
+					"command": "metadataViewer.openRecordSetModule",
+					"group": "bsl",
+					"when": "viewItem =~ /recordset/"
+				},
+				{
+					"command": "metadataViewer.openValueManagerModule",
+					"group": "bsl",
+					"when": "viewItem =~ /valueManager/"
+				},
+				{
+					"command": "metadataViewer.openXml",
+					"group": "xml",
+					"when": "viewItem && viewItem != command && !(viewItem =~ /subsystem/)"
+				},
+				{
+					"command": "metadataViewer.editMetadata",
+					"group": "edit",
+					"when": "viewItem =~ /(object|manager|recordset|valueManager|module|form|predefined)/ && !(viewItem =~ /(handler|subsystem|command|tabularSection|attribute|dimension|resource|column|value|accountingFlag|extDimensionAccountingFlag|addressingAttribute|parameter|urlTemplate|operation)/)"
+				},
+				{
+					"command": "metadataViewer.refreshObjectStructure",
+					"group": "metadata",
+					"when": "(viewItem =~ /object_and_manager/ || viewItem =~ /recordset_and_manager/ || viewItem =~ /object_and_manager_and_predefined/ || viewItem == manager) && viewItem != main"
+				},
+				{
+					"command": "metadataViewer.openPredefinedData",
+					"group": "bsl",
+					"when": "viewItem =~ /predefined/"
+				},
+				{
+					"command": "metadataViewer.showTemplate",
+					"group": "bsl",
+					"when": "viewItem == template"
+				},
+				{
+					"command": "metadataViewer.openHandler",
+					"when": "viewItem =~ /handler/"
+				},
+				{
+					"command": "metadataViewer.openMetadataProperties",
+					"group": "metadata",
+					"when": "viewItem == main"
+				},
+				{
+					"command": "metadataViewer.reindexStructure",
+					"group": "metadata",
+					"when": "viewItem == main"
+				},
+				{
+					"command": "metadataViewer.selectSubsystemToFilter",
+					"group": "metadata",
+					"when": "viewItem == main"
+				},
+				{
+					"command": "metadataViewer.filterBySubsystem",
+					"when": "viewItem =~ /subsystem/ && viewItem not in filteredConfigArray"
+				},
+				{
+					"command": "metadataViewer.clearFilter",
+					"when": "viewItem =~ /subsystem/ && viewItem in filteredConfigArray"
+				}
+			],
+			"editor/context": [
+				{
+					"command": "metadataViewer.genFromCommentPrompt",
+					"group": "1c-metadata",
+					"when": "editorLangId == 'bsl'"
+				},
+				{
+					"command": "metadataViewer.editQueryFromEditor",
+					"group": "1c-metadata",
+					"when": "editorLangId == 'bsl'"
+				}
+			],
+			"editor/lineNumber/context": [
+				{
+					"command": "metadataViewer.toggleBookmark",
+					"group": "navigation",
+					"when": "editorLangId == 'bsl'"
+				},
+				{
+					"command": "metadataViewer.nextBookmark",
+					"group": "navigation",
+					"when": "editorLangId == 'bsl'"
+				},
+				{
+					"command": "metadataViewer.clearAllBookmarks",
+					"group": "navigation",
+					"when": "editorLangId == 'bsl'"
+				},
+				{
+					"command": "metadataViewer.increaseIndent",
+					"group": "1c-metadata",
+					"when": "editorLangId == 'bsl'"
+				},
+				{
+					"command": "metadataViewer.decreaseIndent",
+					"group": "1c-metadata",
+					"when": "editorLangId == 'bsl'"
+				}
+			]
+		},
+		"configuration": [
+			{
+				"title": "1C Metadata Viewer",
+				"properties": {
+					"metadataViewer.searchDepth": {
+						"type": "integer",
+						"default": 10,
+						"description": "%1c-metadata-viewer.searchDepth.title%"
+					},
+					"metadataViewer.debugMode": {
+						"type": "boolean",
+						"default": false,
+						"description": "Включить детальное логирование для отладки (логи будут видны в Output канале '1C Metadata Viewer')"
+					},
+					"metadataViewer.commitFilePath": {
+						"type": "string",
+						"default": "${workspaceFolder}\\build\\commit.txt",
+						"description": "%1c-metadata-viewer.commitFilePath.title%"
+					},
+					"metadataViewer.mcpServer_Name": {
+						"type": "string",
+						"default": "1c-ai",
+						"description": "Имя mcp сервера 1C-напарник"
+					},
+					"metadataViewer.mcpServer_СodeGenerationToolName": {
+						"type": "string",
+						"default": "ask_1c_ai",
+						"description": "Имя инструмента для генерации кода"
+					}
+				}
+			}
+		],
+		"keybindings": [
+			{
+				"command": "metadataViewer.toggleBookmark",
+				"key": "alt+f2",
+				"when": "editorLangId == 'bsl' && editorTextFocus"
+			},
+			{
+				"command": "metadataViewer.nextBookmark",
+				"key": "f2",
+				"when": "editorLangId == 'bsl' && editorTextFocus"
+			},
+			{
+				"command": "metadataViewer.increaseIndent",
+				"key": "tab",
+				"when": "editorLangId == 'bsl'"
+			},
+			{
+				"command": "metadataViewer.decreaseIndent",
+				"key": "alt+backspace",
+				"when": "editorLangId == 'bsl'"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile && npm run build:webview",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"build:webview": "webpack --mode production",
+		"watch:webview": "webpack --mode development --watch",
+		"analyze:bundle": "cross-env ANALYZE=true webpack --mode production",
+		"lint": "eslint . --ext .ts,.tsx",
+		"package": "npx @vscode/vsce package",
+		"test:metadata-save:prepare": "node test-cases/metadata-save-test.js prepare",
+		"test:metadata-save": "npm run compile && node test-cases/metadata-save-test.js test"
+	},
+	"devDependencies": {
+		"@types/node": "^16.11.7",
+		"@types/react": "^18.2.0",
+		"@types/react-dom": "^18.2.0",
+		"@types/vscode": "^1.56.0",
+		"@typescript-eslint/eslint-plugin": "^5.30.0",
+		"@typescript-eslint/parser": "^5.30.0",
+		"cross-env": "^10.1.0",
+		"css-loader": "^6.8.1",
+		"eslint": "^8.13.0",
+		"style-loader": "^3.3.3",
+		"ts-loader": "^9.4.4",
+		"typescript": "^4.8.4",
+		"webpack": "^5.88.2",
+		"webpack-bundle-analyzer": "^5.2.0",
+		"webpack-cli": "^5.1.4"
+	},
+	"dependencies": {
+		"@rjsf/core": "^5.7.3",
+		"@rjsf/utils": "^5.7.3",
+		"@rjsf/validator-ajv8": "^5.7.3",
+		"@vscode/webview-ui-toolkit": "^1.1.0",
+		"@xmldom/xmldom": "^0.8.11",
+		"fast-glob": "^3.2.12",
+		"fast-xml-parser": "^4.0.11",
+		"monaco-editor": "^0.44.0",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0"
+	}
+}

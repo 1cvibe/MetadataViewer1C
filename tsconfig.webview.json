@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "module": "esnext",
+    "target": "es2020",
+    "lib": ["es2020", "dom", "dom.iterable"],
+    "moduleResolution": "node"
+  },
+  "include": [
+    "src/webview/**/*",
+    "src/schemas/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/formPreviewer.ts",
+    "src/templatePanel.ts",
+    "src/predefinedDataPanel.ts"
+  ]
+}
+

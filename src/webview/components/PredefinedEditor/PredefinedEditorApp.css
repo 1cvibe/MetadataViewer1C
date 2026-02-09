@@ -1,0 +1,410 @@
+/**
+ * Стили для редактора предопределенных элементов
+ * Используются стили VS Code для согласованности с другими редакторами
+ */
+
+/* Обеспечиваем полную высоту и скролл для webview предопределённых элементов */
+#root:has(.predefined-editor-wrapper) {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.predefined-editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.predefined-editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  font-family: var(--vscode-font-family);
+  color: var(--vscode-foreground);
+  background-color: var(--vscode-editor-background);
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+  background-color: var(--vscode-editor-background);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-add,
+.btn-save {
+  padding: 6px 16px;
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.btn-add:hover:not(:disabled),
+.btn-save:hover:not(:disabled) {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.btn-add:disabled,
+.btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-edit,
+.btn-delete {
+  padding: 4px 8px;
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  border: 1px solid var(--vscode-button-border);
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-right: 4px;
+  transition: background 0.2s;
+}
+
+.btn-edit:hover,
+.btn-delete:hover {
+  background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+.editor-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.predefined-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.predefined-table th,
+.predefined-table td {
+  border: 1px solid var(--vscode-panel-border);
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.predefined-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: var(--vscode-editor-background);
+  font-weight: 600;
+  color: var(--vscode-foreground);
+  z-index: 1;
+}
+
+.predefined-table tbody tr:hover {
+  background-color: var(--vscode-list-hoverBackground);
+}
+
+.predefined-table tbody tr.is-editing {
+  background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+.predefined-table input[type="text"] {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--vscode-input-border);
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: var(--vscode-font-family);
+}
+
+.predefined-table input[type="text"]:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+.predefined-table input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.predefined-table .cell-folder {
+  text-align: center;
+  width: 80px;
+}
+
+.predefined-table .cell-actions {
+  width: 150px;
+  white-space: nowrap;
+}
+
+.predefined-table .cell-icon {
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.modal {
+  background-color: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  padding: 20px;
+  min-width: 400px;
+  max-width: 90vw;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.modal h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--vscode-foreground);
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.modal-content label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--vscode-foreground);
+}
+
+.modal-content input[type="text"] {
+  padding: 6px 10px;
+  border: 1px solid var(--vscode-input-border);
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: var(--vscode-font-family);
+}
+
+.modal-content input[type="text"]:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+.modal-content input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.modal-content .checkbox-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.modal-actions .btn-primary {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+}
+
+.modal-actions .btn-primary:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.modal-actions .btn-secondary {
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  border: 1px solid var(--vscode-button-border);
+}
+
+.modal-actions .btn-secondary:hover {
+  background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+/* Section Header */
+.section-header {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--vscode-panel-border);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--vscode-descriptionForeground);
+}
+
+/* Attributes List */
+.attributes-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.attribute-card {
+  background-color: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  padding: 16px;
+  transition: all 0.2s;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.attribute-card:hover {
+  border-color: var(--vscode-textLink-foreground);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.attribute-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+  min-width: 0;
+  gap: 8px;
+}
+
+.attribute-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vscode-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.attribute-properties {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.property-row {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  align-items: center;
+}
+
+.property-name {
+  font-weight: 500;
+  color: var(--vscode-descriptionForeground);
+  min-width: 120px;
+}
+
+.property-value {
+  color: var(--vscode-foreground);
+  flex: 1;
+}
+
+/* Кнопки редактирования и удаления в карточках */
+.btn-edit-type {
+  padding: 4px 8px;
+  font-size: 12px;
+  background: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  border: 1px solid var(--vscode-button-border);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-edit-type:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+/* Стили для скроллбара в секции дочерних элементов */
+.child-items-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--vscode-scrollbarSlider-background) transparent;
+}
+
+.child-items-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.child-items-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.child-items-container::-webkit-scrollbar-thumb {
+  background-color: var(--vscode-scrollbarSlider-background);
+  border-radius: 4px;
+}
+
+.child-items-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
