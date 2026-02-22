@@ -4,3 +4,4 @@ yarn.lock
 # Liquid Studio artifact
 Output.xml
 AGENTS.md
+*.vsix
