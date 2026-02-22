@@ -27,13 +27,7 @@
 		"1C:Enterprise"
 	],
 	"activationEvents": [
-		"onStartupFinished",
-		"onView:metadataView",
-		"onLanguage:bsl",
-		"onCommand:metadataViewer.genFromComment",
-		"onCommand:metadataViewer.genFromCommentPrompt",
-		"onCommand:metadataViewer.settings",
-		"onCommand:metadataViewer.openDcsEditor"
+		"workspaceContains:**/*.bsl"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
