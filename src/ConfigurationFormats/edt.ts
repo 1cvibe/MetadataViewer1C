@@ -12,6 +12,16 @@ import { Metadata } from './edtMetadataInterfaces';
 import { ProgressLocation, window } from 'vscode';
 import { NodeWithIdTreeDataProvider } from '../metadataView';
 
+/** Нормализует префикс типа в PascalCase для сопоставления с filterSet (commonModule → CommonModule). */
+function normalizeMetadataNameForFilter(name: string): string {
+	const t = (name ?? '').trim();
+	const dotIdx = t.indexOf('.');
+	if (dotIdx <= 0) return t;
+	const typePart = t.slice(0, dotIdx);
+	const rest = t.slice(dotIdx);
+	return typePart.charAt(0).toUpperCase() + typePart.slice(1) + rest;
+}
+
 export class Edt {
 	private xmlPath: vscode.Uri;
 	private dataProvider: NodeWithIdTreeDataProvider;
@@ -27,8 +37,12 @@ export class Edt {
 			title: "Происходит загрузка конфигурации",
 			cancellable: true
 		}, async (progress, _) => {
-			// Set для O(1) поиска; trim для устранения пробелов
-			const filterSet = new Set(subsystemFilter.map(s => (s ?? '').trim()).filter(Boolean));
+			// Content может использовать camelCase (commonModule), добавляем оба варианта для сопоставления
+			const filterSet = new Set(subsystemFilter.flatMap(s => {
+				const t = (s ?? '').trim();
+				if (!t) return [];
+				return [t, normalizeMetadataNameForFilter(t)];
+			}).filter(Boolean));
 
 			const arrayPaths = getConfigPaths();
 			const configXml = fs.readFileSync(this.xmlPath.fsPath, 'utf8');
@@ -209,7 +223,7 @@ export class Edt {
 
 				switch (objName.split('.')[0]) {
 					case 'Subsystem': {
-						const { chilldren, content } = this.getSubsystemChildren(
+						const { chilldren, content } = await this.getSubsystemChildren(
 							elementObject,
 							folderUri,
 							posix.join(rootPath, objectPath)
@@ -409,7 +423,11 @@ export class Edt {
 		return null;
 	}
 
-	getSubsystemChildren(obj: any, folderUri: vscode.Uri, path: string): {chilldren: TreeItem[] | undefined, content: string[] } {
+	/**
+	 * Рекурсивно собирает дочерние подсистемы и Content (включая вложенные).
+	 * Content вложенных подсистем объединяется с Content родителя для корректной фильтрации.
+	 */
+	async getSubsystemChildren(obj: any, folderUri: vscode.Uri, path: string): Promise<{chilldren: TreeItem[] | undefined, content: string[] }> {
 		const subtreeItems: TreeItem[] = [];
 		// добавляю к фильтру сами подсистемы с иерархией
 		const subsystemContent: string[] = [];
@@ -439,38 +457,50 @@ export class Edt {
 			}
 		}
 
-		if (obj.subsystems && obj.subsystems.length > 0) {
-			for (const subsystem of obj.subsystems) {
-				const subPath = posix.join(path, 'Subsystems', subsystem);
-				const fileName = folderUri.with({ path: posix.join(subPath, `${subsystem}.mdo`) });
-				fs.promises.readFile(fileName.fsPath)
-					.then(data => {
-						const parser = new XMLParser({
-							ignoreAttributes: false,
-							attributeNamePrefix: '$_',
-							isArray: (name, jpath, isLeafNode, isAttribute) => {
-								if(jpath === 'mdclass:Subsystem.subsystems') return true;
-		
-								return false;
-							}
-						});
-		
-						const element = parser.parse(data);
-						const elementObject = element[Object.keys(element)[1]];
-						const elementName = elementObject.name;
-		
-						const { chilldren, content } = this.getSubsystemChildren(elementObject, folderUri, subPath);
+		const subsystemsArr = obj.subsystems ? (Array.isArray(obj.subsystems) ? obj.subsystems : [obj.subsystems]) : [];
+		for (const subsystem of subsystemsArr) {
+			let subsystemName = typeof subsystem === 'string' ? subsystem : (subsystem?.ref ?? subsystem?.$_ref ?? subsystem?.name ?? subsystem?.['#text'] ?? String(subsystem ?? ''));
+			if (subsystemName && subsystemName.includes('.')) {
+				subsystemName = subsystemName.split('.').pop() ?? subsystemName;
+			}
+			if (!subsystemName || !String(subsystemName).trim()) continue;
 
-						subtreeItems.push(GetTreeItem(`${rootPath}/${elementObject.$_uuid}`, elementName ?? subsystem, {
-							icon: 'subsystem',
-							context: `subsystem_${rootPath}`,
-							children: chilldren,
-							command: 'metadataViewer.filterBySubsystem',
-							commandTitle: 'Filter by subsystem',
-							commandArguments: content,
-							configType: 'edt'
-						}));
-					});
+			const subPath = posix.join(path, 'Subsystems', subsystemName);
+			const fileName = folderUri.with({ path: posix.join(subPath, `${subsystemName}.mdo`) });
+			try {
+				const data = await fs.promises.readFile(fileName.fsPath);
+				const parser = new XMLParser({
+					ignoreAttributes: false,
+					attributeNamePrefix: '$_',
+					isArray: (name, jpath, isLeafNode, isAttribute) => {
+						if(jpath === 'mdclass:Subsystem.subsystems') return true;
+						return false;
+					}
+				});
+				const element = parser.parse(data);
+				const elementObject = element[Object.keys(element)[1]];
+				const elementName = elementObject?.name;
+
+				const { chilldren, content } = await this.getSubsystemChildren(elementObject, folderUri, subPath);
+
+				// Объединяем Content вложенной подсистемы с родителем
+				for (const item of content) {
+					if (item && !subsystemContent.includes(item)) {
+						subsystemContent.push(item);
+					}
+				}
+
+				subtreeItems.push(GetTreeItem(`${rootPath}/${elementObject.$_uuid}`, elementName ?? subsystemName, {
+					icon: 'subsystem',
+					context: `subsystem_${rootPath}`,
+					children: chilldren,
+					command: 'metadataViewer.filterBySubsystem',
+					commandTitle: 'Filter by subsystem',
+					commandArguments: content,
+					configType: 'edt'
+				}));
+			} catch {
+				// Файл не найден или ошибка чтения — пропускаем вложенную подсистему
 			}
 		}
 

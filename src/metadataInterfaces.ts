@@ -26,6 +26,9 @@ export interface ObjectMetadata {
 	$_id: string;
 }
 
+/** Объект метаданных для построения дерева: $_name, $_id, опционально Metadata. Используется для элементов из ConfigVersions.Metadata и Configuration.Metadata. */
+export type MetadataItemForTree = { $_name: string; $_id: string; Metadata?: ObjectMetadata[] };
+
 ///////////////////////////////////////////////////////////////////////////////
 
 interface MetaDataObject {

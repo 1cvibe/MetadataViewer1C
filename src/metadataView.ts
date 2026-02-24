@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as glob from 'fast-glob';
 import * as vscode from 'vscode';
 import { posix, join as pathJoin, relative as pathRelative, basename as pathBasename, isAbsolute as pathIsAbsolute, sep as pathSep } from 'path';
-import { MetadataFile, VersionMetadata } from './metadataInterfaces';
+import { MetadataFile, MetadataItemForTree, VersionMetadata } from './metadataInterfaces';
 import { TemplatePanel } from './templatePanel';
 import { TemplateFile } from './templatInterfaces';
 import { TemplateEditorPanel } from './panels/TemplateEditorPanel';
@@ -87,6 +87,15 @@ export class MetadataView {
 
       this.reindexStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
       context.subscriptions.push(this.reindexStatusBarItem);
+
+      // Инвалидация кэша Content подсистем при изменении файлов
+      if (this.rootPath) {
+        const watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(this.rootPath, '**/Subsystems/**/*.{xml,mdo}'));
+        watcher.onDidChange(() => clearSubsystemContentCache());
+        watcher.onDidCreate(() => clearSubsystemContentCache());
+        watcher.onDidDelete(() => clearSubsystemContentCache());
+        context.subscriptions.push(watcher);
+      }
 
       view.onDidExpandElement((e: vscode.TreeViewExpansionEvent<TreeItem>) => {
         void this.expand(e.element);
@@ -208,6 +217,7 @@ export class MetadataView {
    * Отображает прогресс в status bar, включая «проиндексировано x/N».
    */
   private async reindexStructure(): Promise<void> {
+    clearSubsystemContentCache();
     const sb = this.reindexStatusBarItem;
     try {
       sb.show();
@@ -1218,7 +1228,10 @@ export class MetadataView {
       try {
         const configXmlPath = this.rootPath.with({ path: posix.join(configId, 'ConfigDumpInfo.xml') });
         const configXml = await vscode.workspace.fs.readFile(configXmlPath);
-        const arrayPaths = ['ConfigDumpInfo.ConfigVersions.Metadata.Metadata'];
+        const arrayPaths = [
+          'ConfigDumpInfo.ConfigVersions.Metadata',
+          'ConfigDumpInfo.ConfigVersions.Metadata.Metadata',
+        ];
         const parser = new XMLParser({
           ignoreAttributes: false,
           attributeNamePrefix: '$_',
@@ -1242,86 +1255,84 @@ export class MetadataView {
             outputChannel.appendLine(`[selectSubsystemToFilter] Найдено ${subsystemMetadata.length} подсистем в ConfigDumpInfo`);
           }
           
-          // Создаем TreeItem для каждой подсистемы
-          // Важно: treeItemPath для CollectSubsystemContent должен быть относительным от rootPath
-          // Формат как в строке 1202: "cf/Subsystems/БухгалтерскийУчет" (где "cf" - относительный путь от rootPath)
-          // configId это абсолютный путь, нужно получить относительный путь от rootPath
           const treeItemIdSlash = configId + '/';
           let configRelativePath: string;
           if (this.rootPath) {
-            // Нормализуем пути перед использованием pathRelative (приводим к единому формату)
             const rootPathNormalized = this.rootPath.fsPath.replace(/\\/g, '/');
             const configIdNormalized = configId.replace(/\\/g, '/');
             configRelativePath = pathRelative(rootPathNormalized, configIdNormalized).replace(/\\/g, '/');
-            // Если pathRelative вернул абсолютный путь (пути не связаны), используем только имя папки
             if (configRelativePath.startsWith('..') || pathIsAbsolute(configRelativePath)) {
               configRelativePath = pathBasename(configId);
             }
           } else {
             configRelativePath = pathBasename(configId);
           }
-          
+
+          // Собираем все подсистемы (корневые + вложенные) с путями для параллельной загрузки
+          interface SubsystemEntry {
+            treeItemId: string;
+            name: string;
+            treeItemPath: string;
+            configId: string;
+            subsystemName?: string; // для корневых — $_name для GetSubsystemChildren
+          }
+          const entries: SubsystemEntry[] = [];
+
+          const configIdStr = configId as string;
           for (const subMetadata of subsystemMetadata) {
-            const treeItemId = treeItemIdSlash + subMetadata.$_id;
-            // Формируем путь в том же формате, что и в строке 1202: "configId/Subsystems/БухгалтерскийУчет"
-            // где configId - относительный путь от rootPath
             const relativePath = CreatePath(subMetadata.$_name);
             const treeItemPath = configRelativePath ? `${configRelativePath}/${relativePath}` : relativePath;
-            const subsystemName = subMetadata.$_name.replace('Subsystem.', '');
-            
-            if (debugMode) {
-              outputChannel.appendLine(`[selectSubsystemToFilter] Создание подсистемы: name=${subMetadata.$_name}, treeItemPath=${treeItemPath}, configId=${configId}, configRelativePath=${configRelativePath}, rootPath=${this.rootPath?.fsPath}`);
-            }
-            
-            const subsystemItem = GetTreeItem(
-              treeItemId, subMetadata.$_name, {
-                icon: 'subsystem',
-                context: `subsystem_${configId}`,
-                children: this.rootPath ? GetSubsystemChildren(this.rootPath, configId, versionMetadata, subMetadata.$_name) : undefined,
-                command: 'metadataViewer.filterBySubsystem',
-                commandTitle: 'Filter by subsystem',
-                commandArguments: this.rootPath ? CollectSubsystemContent(this.rootPath, treeItemPath) : []
-              }
-            );
-            
-            allSubsystems.push(subsystemItem);
+            entries.push({
+              treeItemId: treeItemIdSlash + subMetadata.$_id,
+              name: subMetadata.$_name,
+              treeItemPath,
+              configId: configIdStr,
+              subsystemName: subMetadata.$_name
+            });
           }
-          
-          // Также добавляем вложенные подсистемы рекурсивно
-          const addNestedSubsystems = (parentName: string, parentId: string, level: number = 2) => {
+
+          const addNestedEntries = (parentName: string, parentId: string, level: number = 2) => {
             const nested = versionMetadata.filter(m => {
               const nameParts = m.$_name?.split('.') || [];
               return nameParts.length === 2 * level && m.$_name.startsWith(parentName + '.');
             });
-            
             for (const nestedSub of nested) {
-              const nestedTreeItemId = parentId + '/' + nestedSub.$_id;
-              // Формируем путь для вложенной подсистемы с Subsystems/ между уровнями
               const nestedRelativePath = createSubsystemPathForCollect(nestedSub.$_name);
-              const nestedTreeItemPath = configRelativePath ? `${configRelativePath}/${nestedRelativePath}` : nestedRelativePath;
-              const nestedName = nestedSub.$_name.split('.').pop() || '';
-              
-              const nestedSubsystemItem = GetTreeItem(
-                nestedTreeItemId, nestedSub.$_name, {
-                  icon: 'subsystem',
-                  context: `subsystem_${configId}`,
-                  children: undefined, // Пока не обрабатываем вложенные подсистемы глубже
-                  command: 'metadataViewer.filterBySubsystem',
-                  commandTitle: 'Filter by subsystem',
-                  commandArguments: this.rootPath ? CollectSubsystemContent(this.rootPath, nestedTreeItemPath) : []
-                }
-              );
-              
-              allSubsystems.push(nestedSubsystemItem);
-              
-              // Рекурсивно добавляем более глубоко вложенные подсистемы
-              addNestedSubsystems(nestedSub.$_name, nestedTreeItemId, level + 1);
+              const nestedTreeItemPath = (configRelativePath ? `${configRelativePath}/${nestedRelativePath}` : nestedRelativePath) || '';
+              entries.push({
+                treeItemId: parentId + '/' + nestedSub.$_id,
+                name: nestedSub.$_name,
+                treeItemPath: nestedTreeItemPath,
+                configId: configIdStr
+              });
+              addNestedEntries(nestedSub.$_name, parentId + '/' + nestedSub.$_id, level + 1);
             }
           };
-          
           for (const subMetadata of subsystemMetadata) {
-            const treeItemId = treeItemIdSlash + subMetadata.$_id;
-            addNestedSubsystems(subMetadata.$_name, treeItemId, 2);
+            addNestedEntries(subMetadata.$_name, treeItemIdSlash + subMetadata.$_id, 2);
+          }
+
+          // Параллельная загрузка Content для всех подсистем
+          const contents = this.rootPath
+            ? await Promise.all(entries.map(e => collectSubsystemContentAsync(this.rootPath!, e.treeItemPath)))
+            : entries.map(() => [] as string[]);
+
+          for (let i = 0; i < entries.length; i++) {
+            const e = entries[i];
+            const content = contents[i];
+            const subsystemItem = GetTreeItem(
+              e.treeItemId, e.name, {
+                icon: 'subsystem',
+                context: `subsystem_${e.configId}`,
+                children: e.subsystemName && this.rootPath
+                  ? GetSubsystemChildren(this.rootPath, configId, versionMetadata, e.subsystemName)
+                  : undefined,
+                command: 'metadataViewer.filterBySubsystem',
+                commandTitle: 'Filter by subsystem',
+                commandArguments: content
+              }
+            );
+            allSubsystems.push(subsystemItem);
           }
         }
       } catch (error) {
@@ -1521,6 +1532,7 @@ export class MetadataView {
 
         const configXml = await vscode.workspace.fs.readFile(this.rootPath.with({ path: posix.join(element.id, 'ConfigDumpInfo.xml') }));
         const arrayPaths = [
+          'ConfigDumpInfo.ConfigVersions.Metadata',
           'ConfigDumpInfo.ConfigVersions.Metadata.Metadata',
         ];
 
@@ -1534,8 +1546,25 @@ export class MetadataView {
           }
         });
         const result = parser.parse(Buffer.from(configXml));
-
         const typedResult = result as MetadataFile;
+        const rawMetadata = typedResult.ConfigDumpInfo?.ConfigVersions?.Metadata || [];
+        // В CF ConfigVersions.Metadata — массив из одного элемента "Configuration", реальные объекты — в Configuration.Metadata
+        const versionMetadata = (rawMetadata.length === 1 && rawMetadata[0]?.$_name === 'Configuration' && Array.isArray(rawMetadata[0]?.Metadata))
+          ? rawMetadata[0].Metadata
+          : rawMetadata;
+
+        // Индекс Content: предзагрузка Content всех подсистем для O(1) lookup при построении дерева
+        const subsystemEntries = versionMetadata.filter(m => {
+          const parts = m.$_name?.split('.') || [];
+          return parts[0] === 'Subsystem' && parts.length >= 2;
+        });
+        if (subsystemEntries.length > 0 && this.rootPath) {
+          const paths = subsystemEntries.map(m =>
+            `${element.id}/${createSubsystemPathForCollect(m.$_name)}`
+          );
+          await Promise.all(paths.map(p => collectSubsystemContentAsync(this.rootPath!, p)));
+        }
+
         CreateTreeElements(this.rootPath!,
           element,
           typedResult,
@@ -2080,7 +2109,11 @@ async function LoadAndParseConfigurationXml(
 }
 
 function CreateTreeElements(rootPath: vscode.Uri, element: TreeItem, metadataFile: MetadataFile, subsystemFilter: string[]) {
-	const versionMetadata = metadataFile.ConfigDumpInfo.ConfigVersions.Metadata;
+	const rawMetadata = metadataFile.ConfigDumpInfo?.ConfigVersions?.Metadata || [];
+	// В CF ConfigVersions.Metadata — массив из одного элемента "Configuration", реальные объекты — в Configuration.Metadata
+	const versionMetadata = (rawMetadata.length === 1 && rawMetadata[0]?.$_name === 'Configuration' && Array.isArray(rawMetadata[0]?.Metadata))
+		? rawMetadata[0].Metadata
+		: rawMetadata;
 
   const treeItemIdSlash = element.id + '/';
 
@@ -2168,14 +2201,21 @@ function CreateTreeElements(rootPath: vscode.Uri, element: TreeItem, metadataFil
 		});
 	}
 
+	// Content в .mdo может использовать camelCase (commonModule), ConfigDumpInfo — PascalCase (CommonModule).
+	// Добавляем оригинал и нормализованный вариант для надёжного сопоставления.
 	const filterSet = subsystemFilter.length > 0
-		? new Set(subsystemFilter.map(s => (s ?? '').trim()).filter(Boolean))
+		? new Set(subsystemFilter.flatMap(s => {
+			const t = (s ?? '').trim();
+			if (!t) return [];
+			return [t, normalizeMetadataNameForFilter(t)];
+		}).filter(Boolean))
 		: null;
 	const reduceResult = versionMetadata.reduce<MetadataObjects>((previous, current) => {
 		if (current.$_name.split('.').length !== 2) {
 			return previous;
 		}
-		if (filterSet && !filterSet.has((current.$_name ?? '').trim())) {
+		const nameTrimmed = (current.$_name ?? '').trim();
+		if (filterSet && !filterSet.has(nameTrimmed) && !filterSet.has(normalizeMetadataNameForFilter(nameTrimmed))) {
 			return previous;
 		}
 
@@ -2490,7 +2530,7 @@ function CreateTreeElements(rootPath: vscode.Uri, element: TreeItem, metadataFil
 	console.timeEnd('reduce');
 }
 
-function FillWebServiceItemsByMetadata(idPrefix: string, versionMetadata: VersionMetadata, objectData: MetadataDictionaries) {
+function FillWebServiceItemsByMetadata(idPrefix: string, versionMetadata: MetadataItemForTree, objectData: MetadataDictionaries) {
   return (versionMetadata
 		.Metadata ?? [])
 		.filter(m => m.$_name.startsWith(versionMetadata.$_name + '.Operation.') && m.$_name.split('.').length === 4)
@@ -2501,7 +2541,7 @@ function FillWebServiceItemsByMetadata(idPrefix: string, versionMetadata: Versio
         .map(f => GetTreeItem(idPrefix + f.$_id, f.$_name, { icon: 'parameter' })) }));
 }
 
-function FillHttpServiceItemsByMetadata(idPrefix: string, versionMetadata: VersionMetadata, objectData: MetadataDictionaries) {
+function FillHttpServiceItemsByMetadata(idPrefix: string, versionMetadata: MetadataItemForTree, objectData: MetadataDictionaries) {
   return (versionMetadata
 		.Metadata ?? [])
 		.filter(m => m.$_name.startsWith(versionMetadata.$_name + '.URLTemplate.') && m.$_name.split('.').length === 4)
@@ -2512,7 +2552,7 @@ function FillHttpServiceItemsByMetadata(idPrefix: string, versionMetadata: Versi
         .map(f => GetTreeItem(idPrefix + f.$_id, f.$_name, { icon: 'parameter' })) }));
 }
 
-function FillObjectItemsByMetadata(idPrefix: string, versionMetadata: VersionMetadata, objectData: MetadataDictionaries): TreeItem[] {
+function FillObjectItemsByMetadata(idPrefix: string, versionMetadata: MetadataItemForTree, objectData: MetadataDictionaries): TreeItem[] {
 	const attributes = (versionMetadata
 		.Metadata ?? [])
 		.filter(m => m.$_name.startsWith(versionMetadata.$_name + '.Attribute.'))
@@ -2542,7 +2582,7 @@ function FillObjectItemsByMetadata(idPrefix: string, versionMetadata: VersionMet
 	return [ ...items, ...FillCommonItems(idPrefix , versionMetadata, objectData) ];
 }
 
-function FillDocumentJournalItemsByMetadata(idPrefix: string, versionMetadata: VersionMetadata, objectData: MetadataDictionaries): TreeItem[] {
+function FillDocumentJournalItemsByMetadata(idPrefix: string, versionMetadata: MetadataItemForTree, objectData: MetadataDictionaries): TreeItem[] {
 	const columns = (versionMetadata
 		.Metadata ?? [])
 		.filter(m => m.$_name.startsWith(versionMetadata.$_name + '.Column.'))
@@ -2555,7 +2595,7 @@ function FillDocumentJournalItemsByMetadata(idPrefix: string, versionMetadata: V
 	return [ ...items, ...FillCommonItems(idPrefix, versionMetadata, objectData) ];
 }
 
-function FillEnumItemsByMetadata(idPrefix: string, versionMetadata: VersionMetadata, objectData: MetadataDictionaries): TreeItem[] {
+function FillEnumItemsByMetadata(idPrefix: string, versionMetadata: MetadataItemForTree, objectData: MetadataDictionaries): TreeItem[] {
 	const values = (versionMetadata
 		.Metadata ?? [])
 		.filter(m => m.$_name.startsWith('Enum.'))
@@ -2568,7 +2608,7 @@ function FillEnumItemsByMetadata(idPrefix: string, versionMetadata: VersionMetad
 	return [ ...items, ...FillCommonItems(idPrefix, versionMetadata, objectData) ];
 }
 
-function FillChartOfAccountsItemsByMetadata(idPrefix: string, versionMetadata: VersionMetadata, objectData: MetadataDictionaries): TreeItem[] {
+function FillChartOfAccountsItemsByMetadata(idPrefix: string, versionMetadata: MetadataItemForTree, objectData: MetadataDictionaries): TreeItem[] {
 	const accountingFlags = (versionMetadata
 		.Metadata ?? [])
 		.filter(m => m.$_name.startsWith(versionMetadata.$_name + '.AccountingFlag.'))
@@ -2589,7 +2629,7 @@ function FillChartOfAccountsItemsByMetadata(idPrefix: string, versionMetadata: V
     .sort((x, y) => { return x.label == "Реквизиты" ? -1 : y.label == "Реквизиты" ? 1 : 0; });
 }
 
-function FillRegisterItemsByMetadata(idPrefix: string, versionMetadata: VersionMetadata, objectData: MetadataDictionaries): TreeItem[] {
+function FillRegisterItemsByMetadata(idPrefix: string, versionMetadata: MetadataItemForTree, objectData: MetadataDictionaries): TreeItem[] {
 	const dimensions = (versionMetadata
 		.Metadata ?? [])
 		.filter(m => m.$_name.startsWith(versionMetadata.$_name + '.Dimension.'))
@@ -2614,7 +2654,7 @@ function FillRegisterItemsByMetadata(idPrefix: string, versionMetadata: VersionM
 	return [ ...items, ...FillCommonItems(idPrefix, versionMetadata, objectData) ];
 }
 
-function FillCalculationRegisterItemsByMetadata(idPrefix: string, versionMetadata: VersionMetadata, objectData: MetadataDictionaries): TreeItem[] {
+function FillCalculationRegisterItemsByMetadata(idPrefix: string, versionMetadata: MetadataItemForTree, objectData: MetadataDictionaries): TreeItem[] {
   const items: TreeItem[] = [
     // TODO: Перерасчеты
 	];
@@ -2622,7 +2662,7 @@ function FillCalculationRegisterItemsByMetadata(idPrefix: string, versionMetadat
   return [ ...items, ...FillRegisterItemsByMetadata(idPrefix, versionMetadata, objectData) ];
 }
 
-function FillTaskItemsByMetadata(idPrefix: string, versionMetadata: VersionMetadata, objectData: MetadataDictionaries): TreeItem[] {
+function FillTaskItemsByMetadata(idPrefix: string, versionMetadata: MetadataItemForTree, objectData: MetadataDictionaries): TreeItem[] {
 	const attributes = (versionMetadata
 		.Metadata ?? [])
 		.filter(m => m.$_name.startsWith(versionMetadata.$_name + '.AddressingAttribute.'))
@@ -2636,7 +2676,7 @@ function FillTaskItemsByMetadata(idPrefix: string, versionMetadata: VersionMetad
     .sort((x, y) => { return x.label == "Реквизиты" ? -1 : y.label == "Реквизиты" ? 1 : 0; });
 }
 
-function FillExternalDataSourceItemsByMetadata(idPrefix: string, versionMetadata: VersionMetadata, objectData: MetadataDictionaries): TreeItem[] {
+function FillExternalDataSourceItemsByMetadata(idPrefix: string, versionMetadata: MetadataItemForTree, objectData: MetadataDictionaries): TreeItem[] {
   const items: TreeItem[] = [
     // TODO:
 	];
@@ -2644,7 +2684,7 @@ function FillExternalDataSourceItemsByMetadata(idPrefix: string, versionMetadata
   return items;
 }
 
-function FillCommonItems(idPrefix: string, versionMetadata: VersionMetadata, objectData: MetadataDictionaries): TreeItem[] {
+function FillCommonItems(idPrefix: string, versionMetadata: MetadataItemForTree, objectData: MetadataDictionaries): TreeItem[] {
 	const debugMode = vscode.workspace.getConfiguration().get<boolean>('metadataViewer.debugMode', false);
 	const commands = (versionMetadata
 		.Metadata ?? [])
@@ -2726,6 +2766,34 @@ function searchSerializableTree(node: SerializableTreeNode, matchingId: string):
 }
 
 /**
+ * Кэш Content подсистем для ускорения повторных вызовов CollectSubsystemContent.
+ * Ключ: rootPath.fsPath + '|' + treeItemPath
+ */
+const subsystemContentCache = new Map<string, string[]>();
+
+/**
+ * Очищает кэш Content подсистем. Вызывать при изменении файлов подсистем или смене workspace.
+ */
+export function clearSubsystemContentCache(): void {
+  subsystemContentCache.clear();
+}
+
+/**
+ * Нормализует имя метаданных для сравнения с filterSet.
+ * Content в .mdo может использовать camelCase (commonModule), ConfigDumpInfo — PascalCase (CommonModule).
+ * Возвращает вариант с PascalCase-префиксом типа.
+ */
+function normalizeMetadataNameForFilter(name: string): string {
+	const t = (name ?? '').trim();
+	const dotIdx = t.indexOf('.');
+	if (dotIdx <= 0) return t;
+	const typePart = t.slice(0, dotIdx);
+	const rest = t.slice(dotIdx);
+	const normalized = typePart.charAt(0).toUpperCase() + typePart.slice(1);
+	return normalized + rest;
+}
+
+/**
  * Формирует путь к подсистеме для CollectSubsystemContent.
  * Вставляет Subsystems/ между уровнями иерархии: Subsystem.A.B → Subsystems/A/Subsystems/B.
  */
@@ -2737,7 +2805,7 @@ function createSubsystemPathForCollect(name: string): string {
 function GetSubsystemChildren(
   rootPath: vscode.Uri,
   rootId: string,
-  versionMetadata: VersionMetadata[],
+  versionMetadata: MetadataItemForTree[],
   name: string,
   level = 2
 ): TreeItem[] | undefined {
@@ -2766,36 +2834,47 @@ function GetSubsystemChildren(
   return undefined;
 }
 
+/** Нормализует путь для ключа кэша (единый формат) */
+function normalizeCacheKeyPath(p: string): string {
+  return p.replace(/\\/g, '/');
+}
+
 function CollectSubsystemContent(rootPath: vscode.Uri, treeItemPath: string): string[] {
+  if (!treeItemPath || typeof treeItemPath !== 'string') {
+    return [];
+  }
+
+  const cacheKey = `${normalizeCacheKeyPath(rootPath.fsPath)}|${normalizeCacheKeyPath(treeItemPath)}`;
+  const cached = subsystemContentCache.get(cacheKey);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  // Нормализуем путь: на Windows element.id может содержать обратные слэши
+  const treeItemPathNorm = normalizeCacheKeyPath(treeItemPath);
+
   // добавляю к фильтру сами подсистемы с иерархией
   const subsystemContent: string[] = [];
   
-  if (!treeItemPath || typeof treeItemPath !== 'string') {
-    return subsystemContent;
-  }
-  
-  // Формируем путь к файлу подсистемы: treeItemPath уже содержит путь вида "cf/Subsystems/БухгалтерскийУчет"
-  // Файл подсистемы находится в "cf/Subsystems/БухгалтерскийУчет.xml" (прямо в папке Subsystems)
-  // Или может быть в "cf/Subsystems/БухгалтерскийУчет/БухгалтерскийУчет.xml" (в подпапке, формат EDT)
-  const subsystemsIndex = treeItemPath.indexOf('Subsystems/');
+  // Формируем путь к файлу подсистемы: treeItemPath вида "E:/.../cf/Subsystems/Name" или "cf/Subsystems/Name"
+  // 1С XML: cf/Subsystems/Name.xml или cf/Subsystems/Parent/Subsystems/Child.xml
+  const subsystemsIndex = treeItemPathNorm.indexOf('Subsystems/');
   if (subsystemsIndex !== -1) {
-    const subsystemPath = treeItemPath.slice(subsystemsIndex); // "Subsystems/БухгалтерскийУчет"
+    const subsystemPath = treeItemPathNorm.slice(subsystemsIndex); // "Subsystems/БухгалтерскийУчет"
     const parts = subsystemPath.split('/'); // ["Subsystems", "БухгалтерскийУчет"]
     
     // Добавляем имена подсистем из пути к фильтру (для поддержки иерархии подсистем)
-    // Преобразуем "Subsystems/БухгалтерскийУчет" в "Subsystem.БухгалтерскийУчет"
-    // Для иерархии: "Subsystems/БухгалтерскийУчет/Подсистема1" -> "Subsystem.БухгалтерскийУчет.Подсистема1"
-    const subsystemPathFromTree = subsystemPath.replace(/Subsystems\//g, 'Subsystem.').replace(/\//g, '.');
-    if (subsystemPathFromTree) {
-      // Разбиваем на части через точку и фильтруем пустые: ["Subsystem", "БухгалтерскийУчет"]
-      const treeParts = subsystemPathFromTree.split('.').filter(Boolean);
-      subsystemContent.push(...treeParts);
+    // Формат ConfigDumpInfo: "Subsystem.Parent" или "Subsystem.Parent.Child" для вложенных
+    const nameParts = parts.filter(p => p !== 'Subsystems');
+    if (nameParts.length > 0) {
+      const fullSubsystemName = 'Subsystem.' + nameParts.join('.');
+      subsystemContent.push(fullSubsystemName);
     }
     
     if (parts.length >= 2) {
       // Для вложенных путей (Subsystems/Parent/Subsystems/Child) берём последний сегмент — листовую подсистему
       const subsystemName = parts[parts.length - 1];
-      let configPath = treeItemPath.slice(0, subsystemsIndex); // Путь до "Subsystems/"
+      let configPath = treeItemPathNorm.slice(0, subsystemsIndex); // Путь до "Subsystems/"
       
       // Убираем завершающий слэш, если есть
       if (configPath.endsWith('/')) {
@@ -2807,41 +2886,35 @@ function CollectSubsystemContent(rootPath: vscode.Uri, treeItemPath: string): st
         configPath = '';
       }
       
-      // Пробуем два варианта пути: с подпапкой (EDT формат) и без (XML формат)
-      const pathDirect = configPath ? posix.join(configPath, subsystemPath + '.xml') : (subsystemPath + '.xml'); // "cf/Subsystems/БухгалтерскийУчет.xml" или "Subsystems/БухгалтерскийУчет.xml"
-      const pathWithSubfolder = configPath ? posix.join(configPath, subsystemPath, `${subsystemName}.xml`) : posix.join(subsystemPath, `${subsystemName}.xml`); // "cf/Subsystems/БухгалтерскийУчет/БухгалтерскийУчет.xml"
+      // Пробуем пути: XML формат (.xml) и EDT формат (.mdo в подпапке)
+      const pathDirectXml = configPath ? posix.join(configPath, subsystemPath + '.xml') : (subsystemPath + '.xml');
+      const pathWithSubfolderXml = configPath ? posix.join(configPath, subsystemPath, `${subsystemName}.xml`) : posix.join(subsystemPath, `${subsystemName}.xml`);
+      const pathWithSubfolderMdo = configPath ? posix.join(configPath, subsystemPath, `${subsystemName}.mdo`) : posix.join(subsystemPath, `${subsystemName}.mdo`);
       
       const rootFsPath = rootPath.fsPath;
       // Используем правильное соединение путей для текущей платформы
       // rootFsPath уже в формате текущей платформы (Windows: D:\..., Linux: /...)
       // pathDirect и pathWithSubfolder в формате posix (cf/Subsystems/... или Subsystems/...)
-      // Нужно правильно их объединить, убирая абсолютные пути из pathDirect/pathWithSubfolder
-      // Если pathDirect/pathWithSubfolder начинается с абсолютного пути (Windows: "D:/..." или "/"), игнорируем rootFsPath
-      const pathDirectNormalized = pathDirect.split('/').filter(Boolean); // Убираем пустые элементы
-      const pathWithSubfolderNormalized = pathWithSubfolder.split('/').filter(Boolean);
-      
-      // Если первый элемент пути похож на абсолютный путь Windows (например, "d:", "D:"), используем его как есть
-      let fullPathDirect: string;
-      let fullPathWithSubfolder: string;
-      
-      if (pathDirectNormalized.length > 0 && /^[a-zA-Z]:$/.test(pathDirectNormalized[0])) {
-        // Абсолютный путь Windows - используем как есть, заменяем слэши на разделитель платформы
-        const pathSep = process.platform === 'win32' ? '\\' : '/';
-        fullPathDirect = pathDirect.replace(/\//g, pathSep);
-        fullPathWithSubfolder = pathWithSubfolder.replace(/\//g, pathSep);
-      } else {
-        // Относительный путь - объединяем с rootFsPath
-        fullPathDirect = pathJoin(rootFsPath, ...pathDirectNormalized);
-        fullPathWithSubfolder = pathJoin(rootFsPath, ...pathWithSubfolderNormalized);
-      }
+      const pathSep = process.platform === 'win32' ? '\\' : '/';
+      const toFullPath = (p: string): string => {
+        const normalized = p.split('/').filter(Boolean);
+        if (normalized.length > 0 && /^[a-zA-Z]:$/.test(normalized[0])) {
+          return p.replace(/\//g, pathSep);
+        }
+        return pathJoin(rootFsPath, ...normalized);
+      };
+      const pathsToTry = [
+        pathDirectXml,
+        pathWithSubfolderXml,
+        pathWithSubfolderMdo
+      ].map(toFullPath);
       
       let filePath: string | null = null;
-      
-      // Проверяем существование файла (сначала прямой путь, потом с подпапкой)
-      if (fs.existsSync(fullPathDirect)) {
-        filePath = fullPathDirect;
-      } else if (fs.existsSync(fullPathWithSubfolder)) {
-        filePath = fullPathWithSubfolder;
+      for (const fullPath of pathsToTry) {
+        if (fs.existsSync(fullPath)) {
+          filePath = fullPath;
+          break;
+        }
       }
       
       if (filePath) {
@@ -2897,7 +2970,10 @@ function CollectSubsystemContent(rootPath: vscode.Uri, treeItemPath: string): st
           }
 
           // Рекурсивная агрегация Content вложенных подсистем (ChildObjects/Subsystem)
-          const childObjects = result.MetaDataObject?.Subsystem?.ChildObjects;
+          // Поддержка XML export (MetaDataObject) и EDT .mdo (mdclass:Subsystem)
+          const childObjects = result.MetaDataObject?.Subsystem?.ChildObjects
+            ?? (result as any)['mdclass:Subsystem']?.childObjects
+            ?? (result as any)['mdclass:Subsystem']?.ChildObjects;
           const childSubsystems = childObjects?.Subsystem ?? (childObjects as any)?.['Subsystem'];
           const childNames: string[] = childSubsystems
             ? (Array.isArray(childSubsystems) ? childSubsystems : [childSubsystems])
@@ -2936,20 +3012,156 @@ function CollectSubsystemContent(rootPath: vscode.Uri, treeItemPath: string): st
         const config = vscode.workspace.getConfiguration();
         const debugMode = config.get<boolean>('metadataViewer.debugMode', false);
         if (debugMode) {
-          console.warn(`[CollectSubsystemContent] Файл подсистемы не найден. treeItemPath: ${treeItemPath}, пробовались пути: ${fullPathDirect}, ${fullPathWithSubfolder}`);
-          outputChannel.appendLine(`[CollectSubsystemContent] Файл подсистемы не найден. treeItemPath: ${treeItemPath}, пробовались пути: ${fullPathDirect}, ${fullPathWithSubfolder}`);
+          console.warn(`[CollectSubsystemContent] Файл подсистемы не найден. treeItemPath: ${treeItemPathNorm}, пути: ${pathsToTry.join(', ')}`);
+          outputChannel.appendLine(`[CollectSubsystemContent] Файл подсистемы не найден. treeItemPath: ${treeItemPathNorm}`);
         }
+        // Не кэшируем при ненайденном файле — следующий вызов попробует снова
+        return subsystemContent;
       }
     }
   }
 
+  // Кэшируем только при успешном чтении файла (filePath был найден)
+  subsystemContentCache.set(cacheKey, subsystemContent);
+  return subsystemContent;
+}
+
+/**
+ * Асинхронная версия CollectSubsystemContent для параллельного чтения.
+ * Использует тот же кэш, что и синхронная версия.
+ */
+async function collectSubsystemContentAsync(rootPath: vscode.Uri, treeItemPath: string): Promise<string[]> {
+  if (!treeItemPath || typeof treeItemPath !== 'string') {
+    return [];
+  }
+
+  const cacheKey = `${normalizeCacheKeyPath(rootPath.fsPath)}|${normalizeCacheKeyPath(treeItemPath)}`;
+  const cached = subsystemContentCache.get(cacheKey);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  const treeItemPathNorm = normalizeCacheKeyPath(treeItemPath);
+  const subsystemContent: string[] = [];
+  const subsystemsIndex = treeItemPathNorm.indexOf('Subsystems/');
+  if (subsystemsIndex === -1) {
+    return subsystemContent;
+  }
+
+  const subsystemPath = treeItemPathNorm.slice(subsystemsIndex);
+  const parts = subsystemPath.split('/');
+  const subsystemPathFromTree = subsystemPath.replace(/Subsystems\//g, 'Subsystem.').replace(/\//g, '.');
+  if (subsystemPathFromTree) {
+    subsystemContent.push(...subsystemPathFromTree.split('.').filter(Boolean));
+  }
+
+  if (parts.length < 2) {
+    return subsystemContent;
+  }
+
+  const subsystemName = parts[parts.length - 1];
+  let configPath = treeItemPathNorm.slice(0, subsystemsIndex);
+  if (configPath.endsWith('/')) configPath = configPath.slice(0, -1);
+  if (!configPath || configPath === '/') configPath = '';
+
+  const pathDirectXml = configPath ? posix.join(configPath, subsystemPath + '.xml') : (subsystemPath + '.xml');
+  const pathWithSubfolderXml = configPath ? posix.join(configPath, subsystemPath, `${subsystemName}.xml`) : posix.join(subsystemPath, `${subsystemName}.xml`);
+  const pathWithSubfolderMdo = configPath ? posix.join(configPath, subsystemPath, `${subsystemName}.mdo`) : posix.join(subsystemPath, `${subsystemName}.mdo`);
+  const rootFsPath = rootPath.fsPath;
+  const pathSep = process.platform === 'win32' ? '\\' : '/';
+  const toFullPath = (p: string): string => {
+    const normalized = p.split('/').filter(Boolean);
+    if (normalized.length > 0 && /^[a-zA-Z]:$/.test(normalized[0])) {
+      return p.replace(/\//g, pathSep);
+    }
+    return pathJoin(rootFsPath, ...normalized);
+  };
+  const pathsToTry = [pathDirectXml, pathWithSubfolderXml, pathWithSubfolderMdo].map(toFullPath);
+
+  let filePath: string | null = null;
+  for (const fullPath of pathsToTry) {
+    if (fs.existsSync(fullPath)) {
+      filePath = fullPath;
+      break;
+    }
+  }
+
+  if (filePath) {
+    try {
+      const configXml = await fs.promises.readFile(filePath, 'utf-8');
+      const parser = new XMLParser({
+        ignoreAttributes: false,
+        attributeNamePrefix: '$_',
+        textNodeName: '#text',
+        removeNSPrefix: false,
+      });
+      const result = parser.parse(configXml);
+      const contentNode =
+        result.MetaDataObject?.Subsystem?.Properties?.Content ??
+        result.MetaDataObject?.Subsystem?.Content ??
+        (result as any)['mdclass:Subsystem']?.content ??
+        (result as any)['mdclass:Subsystem']?.properties?.content;
+      let content: any = null;
+      if (contentNode) {
+        content = contentNode["xr:Item"] || contentNode.Item ||
+          contentNode["xr:content"] || contentNode.content ||
+          (Array.isArray(contentNode) ? contentNode : null);
+      }
+      if (content) {
+        const contentArray = Array.isArray(content) ? content : [content];
+        for (const contentElem of contentArray) {
+          let text: string | null = null;
+          if (typeof contentElem === 'string') {
+            text = contentElem;
+          } else if (contentElem && typeof contentElem === 'object') {
+            text = contentElem["#text"] ?? contentElem.ref ?? contentElem.text ?? contentElem.value ??
+              (() => {
+                const keys = Object.keys(contentElem).filter(k => !k.startsWith('@') && !k.startsWith('$_'));
+                if (keys.length === 1 && typeof contentElem[keys[0]] === 'string') return contentElem[keys[0]];
+                return null;
+              })();
+          }
+          if (text && typeof text === 'string' && text.trim().length > 0) {
+            subsystemContent.push(text.trim());
+          }
+        }
+      }
+
+      const childObjects = result.MetaDataObject?.Subsystem?.ChildObjects
+        ?? (result as any)['mdclass:Subsystem']?.childObjects
+        ?? (result as any)['mdclass:Subsystem']?.ChildObjects;
+      const childSubsystems = childObjects?.Subsystem ?? (childObjects as any)?.['Subsystem'];
+      const childNames: string[] = childSubsystems
+        ? (Array.isArray(childSubsystems) ? childSubsystems : [childSubsystems])
+            .map((s: any) => typeof s === 'string' ? s : s?.['#text'] ?? s?.text ?? String(s ?? ''))
+            .filter((name: string) => name && name.trim().length > 0)
+        : [];
+
+      for (const childName of childNames) {
+        const nestedSubsystemPath = subsystemPath + '/Subsystems/' + childName;
+        const nestedPath = configPath ? configPath + '/' + nestedSubsystemPath : nestedSubsystemPath;
+        const nestedContent = await collectSubsystemContentAsync(rootPath, nestedPath);
+        for (const item of nestedContent) {
+          if (!subsystemContent.includes(item)) subsystemContent.push(item);
+        }
+      }
+    } catch {
+      // Ошибка чтения — не кэшируем
+      return subsystemContent;
+    }
+    subsystemContentCache.set(cacheKey, subsystemContent);
+  }
   return subsystemContent;
 }
 
 function removeSubSystems(subsystemsTreeItem: TreeItem, subsystemFilter: string[]) {
   const indexesToDelete: number[] = [];
+  const labelStr = (ch: TreeItem) => (typeof ch.label === 'string' ? ch.label : (ch.label as vscode.TreeItemLabel)?.label) ?? '';
   subsystemsTreeItem.children?.forEach((ch, index) => {
-    if (subsystemFilter.indexOf(`Subsystem.${ch.label}`) === -1) {
+    const lbl = labelStr(ch);
+    const fullName = `Subsystem.${lbl}`;
+    const isInFilter = subsystemFilter.some(f => f === fullName || f.endsWith(`.${lbl}`));
+    if (!isInFilter) {
       indexesToDelete.push(index);
     } else {
       removeSubSystems(ch, subsystemFilter);
