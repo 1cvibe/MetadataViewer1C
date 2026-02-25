@@ -1,0 +1,18 @@
+out
+node_modules
+yarn.lock
+# Liquid Studio artifact
+Output.xml
+AGENTS.md
+*.vsix
+.cashe-bsl/**
+.cursor/**
+.serena/**
+.vscode/**
+docs/**
+out/**
+reports/**
+test-case/**
+node_modules/**
+AGENTS.md
+*.code-workspace
