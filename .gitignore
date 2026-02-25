@@ -5,14 +5,14 @@ yarn.lock
 Output.xml
 AGENTS.md
 *.vsix
-.cashe-bsl/**
+.cache-bsl/**
 .cursor/**
 .serena/**
 .vscode/**
 docs/**
 out/**
 reports/**
-test-case/**
+test-cases/**
 node_modules/**
 AGENTS.md
 *.code-workspace
