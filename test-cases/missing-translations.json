@@ -1,0 +1,22 @@
+[
+  "AuthenticationSeparation",
+  "AutoUse",
+  "AuxiliaryObjectForm",
+  "Category",
+  "CodeType",
+  "ConditionalSeparation",
+  "ConfigurationExtensionsSeparation",
+  "DataSeparation",
+  "DataSeparationUse",
+  "DataSeparationValue",
+  "Event",
+  "FillValue",
+  "Handler",
+  "Location",
+  "Mask",
+  "PrivilegedGetMode",
+  "SeparatedDataUse",
+  "Source",
+  "UsersSeparation",
+  "Value"
+]

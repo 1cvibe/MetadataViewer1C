@@ -1,0 +1,2184 @@
+{
+  "summary": {
+    "sourceRoot": "D:\\\\1C\\\\RZDZUP\\\\src\\\\cf",
+    "reportsRoot": "D:\\1C\\RZDZUP\\src\\cf\\Reports",
+    "filesInReportsRoot": 411,
+    "sampleCount": 10,
+    "okCount": 10,
+    "failedCount": 0
+  },
+  "sample": [
+    "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АккредитацииСпециалистов.xml",
+    "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализВерсийОбъектов.xml",
+    "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализВзносовВФонды.xml",
+    "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализВыполненияРегламентныхИнтервалов.xml",
+    "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализЖурналаРегистрации.xml",
+    "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализЗадолженностиПоЗарплате.xml",
+    "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализИзмененийЛичныхДанныхСотрудников.xml",
+    "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализКадровогоРезерва.xml",
+    "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализНачисленийИУдержаний.xml",
+    "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализНачисленийИУдержанийАвансом.xml"
+  ],
+  "perFile": [
+    {
+      "reportFile": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АккредитацииСпециалистов.xml",
+      "reportName": "АккредитацииСпециалистов",
+      "mainRef": "Report.АккредитацииСпециалистов.Template.ОсновнаяСхемаКомпоновкиДанных",
+      "templateName": "ОсновнаяСхемаКомпоновкиДанных",
+      "templatePath": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АккредитацииСпециалистов\\Templates\\ОсновнаяСхемаКомпоновкиДанных\\Ext\\Template.xml",
+      "analysis": {
+        "ok": true,
+        "totalNodes": 378,
+        "maxDepth": 7,
+        "tagsTop": [
+          {
+            "key": "dcsset:item",
+            "count": 101
+          },
+          {
+            "key": "v8:item",
+            "count": 42
+          },
+          {
+            "key": "title",
+            "count": 33
+          },
+          {
+            "key": "dcscor:item",
+            "count": 28
+          },
+          {
+            "key": "dcscor:value",
+            "count": 28
+          },
+          {
+            "key": "field",
+            "count": 27
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 16
+          },
+          {
+            "key": "dcsset:order",
+            "count": 16
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 12
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 12
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 8
+          },
+          {
+            "key": "parameter",
+            "count": 5
+          },
+          {
+            "key": "valueType",
+            "count": 5
+          },
+          {
+            "key": "value",
+            "count": 5
+          },
+          {
+            "key": "v8:variant",
+            "count": 5
+          },
+          {
+            "key": "settingsVariant",
+            "count": 4
+          },
+          {
+            "key": "dcsset:presentation",
+            "count": 4
+          },
+          {
+            "key": "dcsset:settings",
+            "count": 4
+          },
+          {
+            "key": "dcsset:filter",
+            "count": 4
+          },
+          {
+            "key": "dcsset:left",
+            "count": 4
+          }
+        ],
+        "keysTop": [
+          {
+            "key": "dcsset:field",
+            "count": 61
+          },
+          {
+            "key": "#text",
+            "count": 57
+          },
+          {
+            "key": "dcsset:item",
+            "count": 56
+          },
+          {
+            "key": "v8:item",
+            "count": 42
+          },
+          {
+            "key": "v8:lang",
+            "count": 42
+          },
+          {
+            "key": "v8:content",
+            "count": 42
+          },
+          {
+            "key": "title",
+            "count": 33
+          },
+          {
+            "key": "field",
+            "count": 28
+          },
+          {
+            "key": "dataPath",
+            "count": 28
+          },
+          {
+            "key": "dcscor:parameter",
+            "count": 28
+          },
+          {
+            "key": "dcscor:value",
+            "count": 28
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 16
+          },
+          {
+            "key": "dcsset:userSettingID",
+            "count": 16
+          },
+          {
+            "key": "dcsset:order",
+            "count": 16
+          },
+          {
+            "key": "dcsset:groupType",
+            "count": 12
+          },
+          {
+            "key": "dcsset:periodAdditionType",
+            "count": 12
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 12
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 12
+          },
+          {
+            "key": "dcscor:item",
+            "count": 8
+          },
+          {
+            "key": "dcsset:orderType",
+            "count": 8
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 8
+          },
+          {
+            "key": "name",
+            "count": 7
+          },
+          {
+            "key": "valueType",
+            "count": 5
+          },
+          {
+            "key": "v8:Type",
+            "count": 5
+          },
+          {
+            "key": "value",
+            "count": 5
+          },
+          {
+            "key": "useRestriction",
+            "count": 5
+          },
+          {
+            "key": "v8:variant",
+            "count": 5
+          },
+          {
+            "key": "dcsset:name",
+            "count": 4
+          },
+          {
+            "key": "dcsset:presentation",
+            "count": 4
+          },
+          {
+            "key": "dcsset:settings",
+            "count": 4
+          }
+        ]
+      }
+    },
+    {
+      "reportFile": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализВерсийОбъектов.xml",
+      "reportName": "АнализВерсийОбъектов",
+      "mainRef": "Report.АнализВерсийОбъектов.Template.ОсновнаяСхемаКомпоновкиДанных",
+      "templateName": "ОсновнаяСхемаКомпоновкиДанных",
+      "templatePath": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализВерсийОбъектов\\Templates\\ОсновнаяСхемаКомпоновкиДанных\\Ext\\Template.xml",
+      "analysis": {
+        "ok": true,
+        "totalNodes": 69,
+        "maxDepth": 7,
+        "tagsTop": [
+          {
+            "key": "dcsset:item",
+            "count": 17
+          },
+          {
+            "key": "v8:item",
+            "count": 7
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 6
+          },
+          {
+            "key": "dcscor:item",
+            "count": 5
+          },
+          {
+            "key": "dcscor:value",
+            "count": 5
+          },
+          {
+            "key": "dcsset:outputParameters",
+            "count": 4
+          },
+          {
+            "key": "field",
+            "count": 3
+          },
+          {
+            "key": "title",
+            "count": 3
+          },
+          {
+            "key": "totalField",
+            "count": 2
+          },
+          {
+            "key": "dcsset:point",
+            "count": 2
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 2
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 2
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 2
+          },
+          {
+            "key": "dcsset:order",
+            "count": 2
+          },
+          {
+            "key": "dataSource",
+            "count": 1
+          },
+          {
+            "key": "dataSet",
+            "count": 1
+          },
+          {
+            "key": "appearance",
+            "count": 1
+          },
+          {
+            "key": "settingsVariant",
+            "count": 1
+          },
+          {
+            "key": "dcsset:presentation",
+            "count": 1
+          },
+          {
+            "key": "dcsset:settings",
+            "count": 1
+          }
+        ],
+        "keysTop": [
+          {
+            "key": "dcsset:item",
+            "count": 11
+          },
+          {
+            "key": "dcsset:field",
+            "count": 11
+          },
+          {
+            "key": "v8:item",
+            "count": 7
+          },
+          {
+            "key": "v8:lang",
+            "count": 7
+          },
+          {
+            "key": "v8:content",
+            "count": 7
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 6
+          },
+          {
+            "key": "dataPath",
+            "count": 5
+          },
+          {
+            "key": "dcscor:item",
+            "count": 5
+          },
+          {
+            "key": "dcscor:parameter",
+            "count": 5
+          },
+          {
+            "key": "dcscor:value",
+            "count": 5
+          },
+          {
+            "key": "#text",
+            "count": 5
+          },
+          {
+            "key": "field",
+            "count": 4
+          },
+          {
+            "key": "dcsset:outputParameters",
+            "count": 4
+          },
+          {
+            "key": "dcsset:orderType",
+            "count": 4
+          },
+          {
+            "key": "title",
+            "count": 3
+          },
+          {
+            "key": "dataSource",
+            "count": 2
+          },
+          {
+            "key": "name",
+            "count": 2
+          },
+          {
+            "key": "expression",
+            "count": 2
+          },
+          {
+            "key": "dcsset:point",
+            "count": 2
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 2
+          },
+          {
+            "key": "dcsset:groupType",
+            "count": 2
+          },
+          {
+            "key": "dcsset:periodAdditionType",
+            "count": 2
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 2
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 2
+          },
+          {
+            "key": "dcsset:order",
+            "count": 2
+          },
+          {
+            "key": "dataSourceType",
+            "count": 1
+          },
+          {
+            "key": "dataSet",
+            "count": 1
+          },
+          {
+            "key": "appearance",
+            "count": 1
+          },
+          {
+            "key": "query",
+            "count": 1
+          },
+          {
+            "key": "totalField",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "reportFile": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализВзносовВФонды.xml",
+      "reportName": "АнализВзносовВФонды",
+      "mainRef": "Report.АнализВзносовВФонды.Template.ОсновнаяСхемаКомпоновкиДанных",
+      "templateName": "ОсновнаяСхемаКомпоновкиДанных",
+      "templatePath": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализВзносовВФонды\\Templates\\ОсновнаяСхемаКомпоновкиДанных\\Ext\\Template.xml",
+      "analysis": {
+        "ok": true,
+        "totalNodes": 2799,
+        "maxDepth": 13,
+        "tagsTop": [
+          {
+            "key": "dcsset:item",
+            "count": 700
+          },
+          {
+            "key": "dcscor:item",
+            "count": 312
+          },
+          {
+            "key": "dcscor:value",
+            "count": 310
+          },
+          {
+            "key": "v8:item",
+            "count": 163
+          },
+          {
+            "key": "title",
+            "count": 118
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 111
+          },
+          {
+            "key": "valueType",
+            "count": 110
+          },
+          {
+            "key": "field",
+            "count": 95
+          },
+          {
+            "key": "dcsset:left",
+            "count": 73
+          },
+          {
+            "key": "dcsset:right",
+            "count": 61
+          },
+          {
+            "key": "appearance",
+            "count": 58
+          },
+          {
+            "key": "v8:NumberQualifiers",
+            "count": 57
+          },
+          {
+            "key": "dcsset:appearance",
+            "count": 57
+          },
+          {
+            "key": "dcsset:order",
+            "count": 52
+          },
+          {
+            "key": "totalField",
+            "count": 50
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 50
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 50
+          },
+          {
+            "key": "dcsset:outputParameters",
+            "count": 41
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 40
+          },
+          {
+            "key": "role",
+            "count": 37
+          }
+        ],
+        "keysTop": [
+          {
+            "key": "#text",
+            "count": 567
+          },
+          {
+            "key": "dcsset:field",
+            "count": 428
+          },
+          {
+            "key": "dcscor:value",
+            "count": 312
+          },
+          {
+            "key": "dcscor:parameter",
+            "count": 310
+          },
+          {
+            "key": "dcsset:item",
+            "count": 310
+          },
+          {
+            "key": "dcscor:item",
+            "count": 164
+          },
+          {
+            "key": "v8:item",
+            "count": 163
+          },
+          {
+            "key": "v8:lang",
+            "count": 163
+          },
+          {
+            "key": "v8:content",
+            "count": 163
+          },
+          {
+            "key": "dataPath",
+            "count": 156
+          },
+          {
+            "key": "title",
+            "count": 118
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 113
+          },
+          {
+            "key": "valueType",
+            "count": 110
+          },
+          {
+            "key": "v8:Type",
+            "count": 110
+          },
+          {
+            "key": "field",
+            "count": 100
+          },
+          {
+            "key": "dcsset:filter",
+            "count": 83
+          },
+          {
+            "key": "dcsset:left",
+            "count": 73
+          },
+          {
+            "key": "dcsset:comparisonType",
+            "count": 73
+          },
+          {
+            "key": "expression",
+            "count": 67
+          },
+          {
+            "key": "dcsset:right",
+            "count": 61
+          },
+          {
+            "key": "appearance",
+            "count": 58
+          },
+          {
+            "key": "dcsset:groupType",
+            "count": 58
+          },
+          {
+            "key": "v8:NumberQualifiers",
+            "count": 57
+          },
+          {
+            "key": "v8:Digits",
+            "count": 57
+          },
+          {
+            "key": "v8:FractionDigits",
+            "count": 57
+          },
+          {
+            "key": "v8:AllowedSign",
+            "count": 57
+          },
+          {
+            "key": "dcsset:appearance",
+            "count": 57
+          },
+          {
+            "key": "dcsset:order",
+            "count": 52
+          },
+          {
+            "key": "dcsset:periodAdditionType",
+            "count": 50
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 50
+          }
+        ]
+      }
+    },
+    {
+      "reportFile": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализВыполненияРегламентныхИнтервалов.xml",
+      "reportName": "АнализВыполненияРегламентныхИнтервалов",
+      "mainRef": "Report.АнализВыполненияРегламентныхИнтервалов.Template.ОсновнаяСхемаКомпоновкиДанных",
+      "templateName": "ОсновнаяСхемаКомпоновкиДанных",
+      "templatePath": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализВыполненияРегламентныхИнтервалов\\Templates\\ОсновнаяСхемаКомпоновкиДанных\\Ext\\Template.xml",
+      "analysis": {
+        "ok": true,
+        "totalNodes": 101,
+        "maxDepth": 7,
+        "tagsTop": [
+          {
+            "key": "dcsset:item",
+            "count": 18
+          },
+          {
+            "key": "v8:item",
+            "count": 12
+          },
+          {
+            "key": "title",
+            "count": 10
+          },
+          {
+            "key": "field",
+            "count": 7
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 4
+          },
+          {
+            "key": "role",
+            "count": 3
+          },
+          {
+            "key": "parameter",
+            "count": 3
+          },
+          {
+            "key": "valueType",
+            "count": 3
+          },
+          {
+            "key": "value",
+            "count": 3
+          },
+          {
+            "key": "dcscor:item",
+            "count": 3
+          },
+          {
+            "key": "dcscor:value",
+            "count": 3
+          },
+          {
+            "key": "dcsset:order",
+            "count": 3
+          },
+          {
+            "key": "calculatedField",
+            "count": 2
+          },
+          {
+            "key": "totalField",
+            "count": 2
+          },
+          {
+            "key": "v8:DateQualifiers",
+            "count": 2
+          },
+          {
+            "key": "v8:variant",
+            "count": 2
+          },
+          {
+            "key": "dcsset:filter",
+            "count": 2
+          },
+          {
+            "key": "dcsset:left",
+            "count": 2
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 2
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 2
+          }
+        ],
+        "keysTop": [
+          {
+            "key": "dcsset:item",
+            "count": 15
+          },
+          {
+            "key": "v8:item",
+            "count": 12
+          },
+          {
+            "key": "v8:lang",
+            "count": 12
+          },
+          {
+            "key": "v8:content",
+            "count": 12
+          },
+          {
+            "key": "#text",
+            "count": 12
+          },
+          {
+            "key": "dataPath",
+            "count": 11
+          },
+          {
+            "key": "title",
+            "count": 10
+          },
+          {
+            "key": "field",
+            "count": 8
+          },
+          {
+            "key": "expression",
+            "count": 6
+          },
+          {
+            "key": "dcsset:field",
+            "count": 6
+          },
+          {
+            "key": "name",
+            "count": 5
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 5
+          },
+          {
+            "key": "role",
+            "count": 3
+          },
+          {
+            "key": "dcscom:dimension",
+            "count": 3
+          },
+          {
+            "key": "valueType",
+            "count": 3
+          },
+          {
+            "key": "v8:Type",
+            "count": 3
+          },
+          {
+            "key": "value",
+            "count": 3
+          },
+          {
+            "key": "useRestriction",
+            "count": 3
+          },
+          {
+            "key": "dcscor:item",
+            "count": 3
+          },
+          {
+            "key": "dcscor:parameter",
+            "count": 3
+          },
+          {
+            "key": "dcscor:value",
+            "count": 3
+          },
+          {
+            "key": "dcsset:order",
+            "count": 3
+          },
+          {
+            "key": "dataSource",
+            "count": 2
+          },
+          {
+            "key": "v8:DateQualifiers",
+            "count": 2
+          },
+          {
+            "key": "v8:DateFractions",
+            "count": 2
+          },
+          {
+            "key": "v8:variant",
+            "count": 2
+          },
+          {
+            "key": "dcsset:filter",
+            "count": 2
+          },
+          {
+            "key": "dcsset:left",
+            "count": 2
+          },
+          {
+            "key": "dcsset:comparisonType",
+            "count": 2
+          },
+          {
+            "key": "dcsset:userSettingID",
+            "count": 2
+          }
+        ]
+      }
+    },
+    {
+      "reportFile": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализЖурналаРегистрации.xml",
+      "reportName": "АнализЖурналаРегистрации",
+      "mainRef": "Report.АнализЖурналаРегистрации.Template.ОсновнаяСхемаКомпоновкиДанных",
+      "templateName": "ОсновнаяСхемаКомпоновкиДанных",
+      "templatePath": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализЖурналаРегистрации\\Templates\\ОсновнаяСхемаКомпоновкиДанных\\Ext\\Template.xml",
+      "analysis": {
+        "ok": true,
+        "totalNodes": 1138,
+        "maxDepth": 12,
+        "tagsTop": [
+          {
+            "key": "dcsset:item",
+            "count": 236
+          },
+          {
+            "key": "v8:item",
+            "count": 145
+          },
+          {
+            "key": "dcscor:item",
+            "count": 124
+          },
+          {
+            "key": "dcscor:value",
+            "count": 124
+          },
+          {
+            "key": "dcsset:lwsTitle",
+            "count": 48
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 46
+          },
+          {
+            "key": "title",
+            "count": 44
+          },
+          {
+            "key": "valueType",
+            "count": 38
+          },
+          {
+            "key": "field",
+            "count": 22
+          },
+          {
+            "key": "dcsset:order",
+            "count": 22
+          },
+          {
+            "key": "dcsset:appearance",
+            "count": 22
+          },
+          {
+            "key": "value",
+            "count": 21
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 20
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 20
+          },
+          {
+            "key": "dcsset:conditionalAppearance",
+            "count": 20
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 19
+          },
+          {
+            "key": "parameter",
+            "count": 18
+          },
+          {
+            "key": "dcsset:outputParameters",
+            "count": 18
+          },
+          {
+            "key": "totalField",
+            "count": 16
+          },
+          {
+            "key": "v8:NumberQualifiers",
+            "count": 15
+          }
+        ],
+        "keysTop": [
+          {
+            "key": "#text",
+            "count": 158
+          },
+          {
+            "key": "dcsset:field",
+            "count": 158
+          },
+          {
+            "key": "v8:item",
+            "count": 145
+          },
+          {
+            "key": "v8:lang",
+            "count": 145
+          },
+          {
+            "key": "v8:content",
+            "count": 145
+          },
+          {
+            "key": "dcsset:item",
+            "count": 137
+          },
+          {
+            "key": "dcscor:parameter",
+            "count": 124
+          },
+          {
+            "key": "dcscor:value",
+            "count": 124
+          },
+          {
+            "key": "dcscor:item",
+            "count": 61
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 52
+          },
+          {
+            "key": "dcsset:lwsTitle",
+            "count": 48
+          },
+          {
+            "key": "title",
+            "count": 44
+          },
+          {
+            "key": "dataPath",
+            "count": 42
+          },
+          {
+            "key": "valueType",
+            "count": 38
+          },
+          {
+            "key": "dcsset:viewMode",
+            "count": 38
+          },
+          {
+            "key": "v8:Type",
+            "count": 36
+          },
+          {
+            "key": "dcsset:userSettingID",
+            "count": 32
+          },
+          {
+            "key": "dcsset:filter",
+            "count": 27
+          },
+          {
+            "key": "field",
+            "count": 24
+          },
+          {
+            "key": "dcsset:appearance",
+            "count": 24
+          },
+          {
+            "key": "dcsset:order",
+            "count": 22
+          },
+          {
+            "key": "name",
+            "count": 21
+          },
+          {
+            "key": "value",
+            "count": 21
+          },
+          {
+            "key": "expression",
+            "count": 20
+          },
+          {
+            "key": "dcsset:groupType",
+            "count": 20
+          },
+          {
+            "key": "dcsset:periodAdditionType",
+            "count": 20
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 20
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 20
+          },
+          {
+            "key": "dcsset:conditionalAppearance",
+            "count": 20
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 19
+          }
+        ]
+      }
+    },
+    {
+      "reportFile": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализЗадолженностиПоЗарплате.xml",
+      "reportName": "АнализЗадолженностиПоЗарплате",
+      "mainRef": "Report.АнализЗадолженностиПоЗарплате.Template.ОсновнаяСхемаКомпоновкиДанных",
+      "templateName": "ОсновнаяСхемаКомпоновкиДанных",
+      "templatePath": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализЗадолженностиПоЗарплате\\Templates\\ОсновнаяСхемаКомпоновкиДанных\\Ext\\Template.xml",
+      "analysis": {
+        "ok": true,
+        "totalNodes": 960,
+        "maxDepth": 11,
+        "tagsTop": [
+          {
+            "key": "dcsset:item",
+            "count": 242
+          },
+          {
+            "key": "dcscor:item",
+            "count": 127
+          },
+          {
+            "key": "dcscor:value",
+            "count": 127
+          },
+          {
+            "key": "v8:item",
+            "count": 50
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 43
+          },
+          {
+            "key": "dcsset:appearance",
+            "count": 40
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 38
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 38
+          },
+          {
+            "key": "dcsset:left",
+            "count": 26
+          },
+          {
+            "key": "dcsset:right",
+            "count": 23
+          },
+          {
+            "key": "field",
+            "count": 20
+          },
+          {
+            "key": "dcsset:order",
+            "count": 20
+          },
+          {
+            "key": "title",
+            "count": 18
+          },
+          {
+            "key": "group",
+            "count": 18
+          },
+          {
+            "key": "dcsset:outputParameters",
+            "count": 18
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 17
+          },
+          {
+            "key": "dcsset:conditionalAppearance",
+            "count": 15
+          },
+          {
+            "key": "totalField",
+            "count": 10
+          },
+          {
+            "key": "dcsset:filter",
+            "count": 10
+          },
+          {
+            "key": "dcsset:lwsTitle",
+            "count": 10
+          }
+        ],
+        "keysTop": [
+          {
+            "key": "#text",
+            "count": 233
+          },
+          {
+            "key": "dcscor:parameter",
+            "count": 127
+          },
+          {
+            "key": "dcscor:value",
+            "count": 127
+          },
+          {
+            "key": "dcsset:field",
+            "count": 124
+          },
+          {
+            "key": "dcsset:item",
+            "count": 122
+          },
+          {
+            "key": "dcscor:item",
+            "count": 68
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 57
+          },
+          {
+            "key": "v8:item",
+            "count": 50
+          },
+          {
+            "key": "v8:lang",
+            "count": 50
+          },
+          {
+            "key": "v8:content",
+            "count": 50
+          },
+          {
+            "key": "dcsset:filter",
+            "count": 48
+          },
+          {
+            "key": "dcsset:groupType",
+            "count": 41
+          },
+          {
+            "key": "dcsset:appearance",
+            "count": 40
+          },
+          {
+            "key": "dcsset:periodAdditionType",
+            "count": 38
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 38
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 38
+          },
+          {
+            "key": "dataPath",
+            "count": 31
+          },
+          {
+            "key": "dcsset:left",
+            "count": 26
+          },
+          {
+            "key": "dcsset:comparisonType",
+            "count": 26
+          },
+          {
+            "key": "dcsset:title",
+            "count": 26
+          },
+          {
+            "key": "dcsset:right",
+            "count": 23
+          },
+          {
+            "key": "field",
+            "count": 21
+          },
+          {
+            "key": "dcsset:userSettingID",
+            "count": 21
+          },
+          {
+            "key": "dcsset:order",
+            "count": 20
+          },
+          {
+            "key": "title",
+            "count": 18
+          },
+          {
+            "key": "dcsset:outputParameters",
+            "count": 18
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 17
+          },
+          {
+            "key": "dcsset:use",
+            "count": 15
+          },
+          {
+            "key": "dcsset:conditionalAppearance",
+            "count": 15
+          },
+          {
+            "key": "expression",
+            "count": 13
+          }
+        ]
+      }
+    },
+    {
+      "reportFile": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализИзмененийЛичныхДанныхСотрудников.xml",
+      "reportName": "АнализИзмененийЛичныхДанныхСотрудников",
+      "mainRef": "Report.АнализИзмененийЛичныхДанныхСотрудников.Template.ОсновнаяСхемаКомпоновкиДанных",
+      "templateName": "ОсновнаяСхемаКомпоновкиДанных",
+      "templatePath": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализИзмененийЛичныхДанныхСотрудников\\Templates\\ОсновнаяСхемаКомпоновкиДанных\\Ext\\Template.xml",
+      "analysis": {
+        "ok": true,
+        "totalNodes": 226,
+        "maxDepth": 10,
+        "tagsTop": [
+          {
+            "key": "dcsset:item",
+            "count": 49
+          },
+          {
+            "key": "dcscor:item",
+            "count": 23
+          },
+          {
+            "key": "field",
+            "count": 21
+          },
+          {
+            "key": "dcscor:value",
+            "count": 19
+          },
+          {
+            "key": "dcsset:left",
+            "count": 13
+          },
+          {
+            "key": "dcsset:right",
+            "count": 10
+          },
+          {
+            "key": "v8:item",
+            "count": 9
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 8
+          },
+          {
+            "key": "title",
+            "count": 6
+          },
+          {
+            "key": "dcsset:order",
+            "count": 5
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 5
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 5
+          },
+          {
+            "key": "dcscor:mode",
+            "count": 4
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 4
+          },
+          {
+            "key": "dcsset:conditionalAppearance",
+            "count": 4
+          },
+          {
+            "key": "dcsset:appearance",
+            "count": 4
+          },
+          {
+            "key": "inputParameters",
+            "count": 3
+          },
+          {
+            "key": "parameter",
+            "count": 3
+          },
+          {
+            "key": "valueType",
+            "count": 3
+          },
+          {
+            "key": "value",
+            "count": 3
+          }
+        ],
+        "keysTop": [
+          {
+            "key": "#text",
+            "count": 55
+          },
+          {
+            "key": "dcsset:item",
+            "count": 28
+          },
+          {
+            "key": "dataPath",
+            "count": 23
+          },
+          {
+            "key": "dcscor:value",
+            "count": 23
+          },
+          {
+            "key": "field",
+            "count": 22
+          },
+          {
+            "key": "dcscor:parameter",
+            "count": 19
+          },
+          {
+            "key": "dcsset:field",
+            "count": 19
+          },
+          {
+            "key": "dcscor:item",
+            "count": 14
+          },
+          {
+            "key": "dcsset:left",
+            "count": 13
+          },
+          {
+            "key": "dcsset:comparisonType",
+            "count": 13
+          },
+          {
+            "key": "v8:item",
+            "count": 9
+          },
+          {
+            "key": "v8:lang",
+            "count": 9
+          },
+          {
+            "key": "v8:content",
+            "count": 9
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 9
+          },
+          {
+            "key": "dcsset:right",
+            "count": 8
+          },
+          {
+            "key": "dcsset:filter",
+            "count": 7
+          },
+          {
+            "key": "dcsset:groupType",
+            "count": 7
+          },
+          {
+            "key": "title",
+            "count": 6
+          },
+          {
+            "key": "name",
+            "count": 5
+          },
+          {
+            "key": "dcsset:userSettingID",
+            "count": 5
+          },
+          {
+            "key": "dcsset:order",
+            "count": 5
+          },
+          {
+            "key": "dcsset:periodAdditionType",
+            "count": 5
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 5
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 5
+          },
+          {
+            "key": "dcscor:choiceParameter",
+            "count": 4
+          },
+          {
+            "key": "dcscor:mode",
+            "count": 4
+          },
+          {
+            "key": "dcsset:use",
+            "count": 4
+          },
+          {
+            "key": "dcsset:orderType",
+            "count": 4
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 4
+          },
+          {
+            "key": "dcsset:conditionalAppearance",
+            "count": 4
+          }
+        ]
+      }
+    },
+    {
+      "reportFile": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализКадровогоРезерва.xml",
+      "reportName": "АнализКадровогоРезерва",
+      "mainRef": "Report.АнализКадровогоРезерва.Template.ОсновнаяСхемаКомпоновкиДанных",
+      "templateName": "ОсновнаяСхемаКомпоновкиДанных",
+      "templatePath": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализКадровогоРезерва\\Templates\\ОсновнаяСхемаКомпоновкиДанных\\Ext\\Template.xml",
+      "analysis": {
+        "ok": true,
+        "totalNodes": 270,
+        "maxDepth": 9,
+        "tagsTop": [
+          {
+            "key": "v8:item",
+            "count": 59
+          },
+          {
+            "key": "title",
+            "count": 44
+          },
+          {
+            "key": "field",
+            "count": 42
+          },
+          {
+            "key": "dcsset:item",
+            "count": 25
+          },
+          {
+            "key": "group",
+            "count": 18
+          },
+          {
+            "key": "value",
+            "count": 10
+          },
+          {
+            "key": "valueType",
+            "count": 6
+          },
+          {
+            "key": "availableValue",
+            "count": 6
+          },
+          {
+            "key": "presentation",
+            "count": 6
+          },
+          {
+            "key": "totalField",
+            "count": 6
+          },
+          {
+            "key": "dcscor:item",
+            "count": 5
+          },
+          {
+            "key": "dcscor:value",
+            "count": 5
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 5
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 5
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 5
+          },
+          {
+            "key": "appearance",
+            "count": 4
+          },
+          {
+            "key": "parameter",
+            "count": 4
+          },
+          {
+            "key": "dcsset:lwsTitle",
+            "count": 4
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 4
+          },
+          {
+            "key": "dcsset:order",
+            "count": 4
+          }
+        ],
+        "keysTop": [
+          {
+            "key": "v8:item",
+            "count": 59
+          },
+          {
+            "key": "v8:lang",
+            "count": 59
+          },
+          {
+            "key": "v8:content",
+            "count": 59
+          },
+          {
+            "key": "dataPath",
+            "count": 50
+          },
+          {
+            "key": "title",
+            "count": 44
+          },
+          {
+            "key": "field",
+            "count": 43
+          },
+          {
+            "key": "#text",
+            "count": 22
+          },
+          {
+            "key": "dcsset:item",
+            "count": 19
+          },
+          {
+            "key": "dcsset:field",
+            "count": 11
+          },
+          {
+            "key": "value",
+            "count": 10
+          },
+          {
+            "key": "expression",
+            "count": 10
+          },
+          {
+            "key": "name",
+            "count": 6
+          },
+          {
+            "key": "valueType",
+            "count": 6
+          },
+          {
+            "key": "v8:Type",
+            "count": 6
+          },
+          {
+            "key": "presentation",
+            "count": 6
+          },
+          {
+            "key": "group",
+            "count": 6
+          },
+          {
+            "key": "dcscor:item",
+            "count": 5
+          },
+          {
+            "key": "dcscor:parameter",
+            "count": 5
+          },
+          {
+            "key": "dcscor:value",
+            "count": 5
+          },
+          {
+            "key": "useRestriction",
+            "count": 5
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 5
+          },
+          {
+            "key": "dcsset:groupType",
+            "count": 5
+          },
+          {
+            "key": "dcsset:periodAdditionType",
+            "count": 5
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 5
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 5
+          },
+          {
+            "key": "appearance",
+            "count": 4
+          },
+          {
+            "key": "dcsset:lwsTitle",
+            "count": 4
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 4
+          },
+          {
+            "key": "dcsset:order",
+            "count": 4
+          },
+          {
+            "key": "v8:DateQualifiers",
+            "count": 3
+          }
+        ]
+      }
+    },
+    {
+      "reportFile": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализНачисленийИУдержаний.xml",
+      "reportName": "АнализНачисленийИУдержаний",
+      "mainRef": "Report.АнализНачисленийИУдержаний.Template.ОсновнаяСхемаКомпоновкиДанных",
+      "templateName": "ОсновнаяСхемаКомпоновкиДанных",
+      "templatePath": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализНачисленийИУдержаний\\Templates\\ОсновнаяСхемаКомпоновкиДанных\\Ext\\Template.xml",
+      "analysis": {
+        "ok": true,
+        "totalNodes": 7154,
+        "maxDepth": 12,
+        "tagsTop": [
+          {
+            "key": "dcsset:item",
+            "count": 2055
+          },
+          {
+            "key": "dcscor:item",
+            "count": 739
+          },
+          {
+            "key": "dcscor:value",
+            "count": 725
+          },
+          {
+            "key": "v8:item",
+            "count": 350
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 312
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 287
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 287
+          },
+          {
+            "key": "dcsset:right",
+            "count": 250
+          },
+          {
+            "key": "dcsset:left",
+            "count": 232
+          },
+          {
+            "key": "title",
+            "count": 189
+          },
+          {
+            "key": "dcsset:order",
+            "count": 177
+          },
+          {
+            "key": "dcsset:appearance",
+            "count": 165
+          },
+          {
+            "key": "field",
+            "count": 158
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 144
+          },
+          {
+            "key": "dcsset:filter",
+            "count": 123
+          },
+          {
+            "key": "group",
+            "count": 102
+          },
+          {
+            "key": "valueType",
+            "count": 100
+          },
+          {
+            "key": "dcsset:presentation",
+            "count": 95
+          },
+          {
+            "key": "dcsset:outputParameters",
+            "count": 93
+          },
+          {
+            "key": "dcsset:lwsTitle",
+            "count": 87
+          }
+        ],
+        "keysTop": [
+          {
+            "key": "#text",
+            "count": 1818
+          },
+          {
+            "key": "dcsset:field",
+            "count": 1120
+          },
+          {
+            "key": "dcsset:item",
+            "count": 952
+          },
+          {
+            "key": "dcscor:value",
+            "count": 739
+          },
+          {
+            "key": "dcscor:parameter",
+            "count": 719
+          },
+          {
+            "key": "v8:item",
+            "count": 350
+          },
+          {
+            "key": "v8:lang",
+            "count": 350
+          },
+          {
+            "key": "v8:content",
+            "count": 350
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 340
+          },
+          {
+            "key": "dcscor:item",
+            "count": 314
+          },
+          {
+            "key": "dcsset:groupType",
+            "count": 292
+          },
+          {
+            "key": "dcsset:periodAdditionType",
+            "count": 287
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 287
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 287
+          },
+          {
+            "key": "dcsset:left",
+            "count": 232
+          },
+          {
+            "key": "dcsset:comparisonType",
+            "count": 232
+          },
+          {
+            "key": "dcsset:filter",
+            "count": 231
+          },
+          {
+            "key": "dcsset:userSettingID",
+            "count": 211
+          },
+          {
+            "key": "dcsset:viewMode",
+            "count": 198
+          },
+          {
+            "key": "dataPath",
+            "count": 189
+          },
+          {
+            "key": "title",
+            "count": 189
+          },
+          {
+            "key": "dcsset:order",
+            "count": 177
+          },
+          {
+            "key": "dcscor:use",
+            "count": 172
+          },
+          {
+            "key": "dcsset:appearance",
+            "count": 165
+          },
+          {
+            "key": "field",
+            "count": 161
+          },
+          {
+            "key": "dcsset:right",
+            "count": 151
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 144
+          },
+          {
+            "key": "dcsset:orderType",
+            "count": 143
+          },
+          {
+            "key": "dcsset:dataPath",
+            "count": 132
+          },
+          {
+            "key": "dcsset:detailExpression",
+            "count": 130
+          }
+        ]
+      }
+    },
+    {
+      "reportFile": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализНачисленийИУдержанийАвансом.xml",
+      "reportName": "АнализНачисленийИУдержанийАвансом",
+      "mainRef": "Report.АнализНачисленийИУдержанийАвансом.Template.ОсновнаяСхемаКомпоновкиДанных",
+      "templateName": "ОсновнаяСхемаКомпоновкиДанных",
+      "templatePath": "D:\\1C\\RZDZUP\\src\\cf\\Reports\\АнализНачисленийИУдержанийАвансом\\Templates\\ОсновнаяСхемаКомпоновкиДанных\\Ext\\Template.xml",
+      "analysis": {
+        "ok": true,
+        "totalNodes": 2650,
+        "maxDepth": 12,
+        "tagsTop": [
+          {
+            "key": "dcsset:item",
+            "count": 800
+          },
+          {
+            "key": "dcscor:item",
+            "count": 229
+          },
+          {
+            "key": "dcscor:value",
+            "count": 222
+          },
+          {
+            "key": "v8:item",
+            "count": 169
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 107
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 107
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 101
+          },
+          {
+            "key": "title",
+            "count": 92
+          },
+          {
+            "key": "dcsset:left",
+            "count": 86
+          },
+          {
+            "key": "group",
+            "count": 68
+          },
+          {
+            "key": "dcsset:right",
+            "count": 67
+          },
+          {
+            "key": "dcsset:order",
+            "count": 59
+          },
+          {
+            "key": "dcsset:lwsTitle",
+            "count": 51
+          },
+          {
+            "key": "field",
+            "count": 48
+          },
+          {
+            "key": "dcsset:groupItems",
+            "count": 48
+          },
+          {
+            "key": "dcsset:appearance",
+            "count": 46
+          },
+          {
+            "key": "dcsset:filter",
+            "count": 45
+          },
+          {
+            "key": "parameter",
+            "count": 37
+          },
+          {
+            "key": "value",
+            "count": 37
+          },
+          {
+            "key": "valueType",
+            "count": 34
+          }
+        ],
+        "keysTop": [
+          {
+            "key": "#text",
+            "count": 632
+          },
+          {
+            "key": "dcsset:field",
+            "count": 443
+          },
+          {
+            "key": "dcsset:item",
+            "count": 320
+          },
+          {
+            "key": "dcscor:value",
+            "count": 229
+          },
+          {
+            "key": "dcscor:parameter",
+            "count": 218
+          },
+          {
+            "key": "v8:item",
+            "count": 169
+          },
+          {
+            "key": "v8:lang",
+            "count": 169
+          },
+          {
+            "key": "v8:content",
+            "count": 169
+          },
+          {
+            "key": "dcsset:groupType",
+            "count": 111
+          },
+          {
+            "key": "dcsset:periodAdditionType",
+            "count": 107
+          },
+          {
+            "key": "dcsset:periodAdditionBegin",
+            "count": 107
+          },
+          {
+            "key": "dcsset:periodAdditionEnd",
+            "count": 107
+          },
+          {
+            "key": "dcsset:selection",
+            "count": 105
+          },
+          {
+            "key": "dcscor:item",
+            "count": 103
+          },
+          {
+            "key": "title",
+            "count": 92
+          },
+          {
+            "key": "dcsset:left",
+            "count": 86
+          },
+          {
+            "key": "dcsset:comparisonType",
+            "count": 86
+          },
+          {
+            "key": "dcsset:dataPath",
+            "count": 85
+          },
+          {
+            "key": "dcsset:detailExpression",
+            "count": 85
+          },
+          {
+            "key": "dcsset:detailExpressionPresentation",
+            "count": 85
+          },
+          {
+            "key": "dcsset:totalExpression",
+            "count": 85
+          },
+          {
+            "key": "dcsset:totalExpressionPresentation",
+            "count": 85
+          },
+          {
+            "key": "dcsset:userSettingID",
+            "count": 79
+          },
+          {
+            "key": "dcsset:filter",
+            "count": 67
+          },
+          {
+            "key": "dataPath",
+            "count": 65
+          },
+          {
+            "key": "dcsset:viewMode",
+            "count": 62
+          },
+          {
+            "key": "dcsset:order",
+            "count": 59
+          },
+          {
+            "key": "dcsset:orderType",
+            "count": 58
+          },
+          {
+            "key": "dcsset:title",
+            "count": 53
+          },
+          {
+            "key": "dcsset:lwsTitle",
+            "count": 51
+          }
+        ]
+      }
+    }
+  ]
+}

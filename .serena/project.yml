@@ -81,4 +81,4 @@ excluded_tools: []
 initial_prompt: ""
 
 project_name: "MetaDataViewer_v3"
-included_optional_tools: []
+included_optional_tools: [activate_project]

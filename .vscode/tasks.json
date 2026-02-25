@@ -1,0 +1,66 @@
+// See https://go.microsoft.com/fwlink/?LinkId=733558
+// for the documentation about the tasks.json format
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "npm: compile",
+            "type": "shell",
+            "command": "npm",
+            "args": ["run", "compile"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$tsc"],
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "npm: build:webview",
+            "type": "shell",
+            "command": "npm",
+            "args": ["run", "build:webview"],
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "compile and build webview",
+            "dependsOn": ["npm: compile", "npm: build:webview"],
+            "dependsOrder": "sequence",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": ["$tsc"]
+        },
+        {
+            "type": "npm",
+            "script": "watch",
+            "problemMatcher": "$tsc-watch",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "never"
+            },
+            "group": "build"
+        },
+        {
+            "label": "npm: install",
+            "type": "shell",
+            "command": "npm",
+            "args": ["install"],
+            "problemMatcher": []
+        },
+        {
+            "label": "vsce: package",
+            "type": "shell",
+            "command": "vsce",
+            "args": ["package"],
+            "problemMatcher": []
+        }
+    ]
+}
