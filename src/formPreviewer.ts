@@ -430,7 +430,6 @@ export class FormPreviewer {
    */
   private getHtmlForWebview(webview: vscode.Webview, extensionUri: vscode.Uri): string {
     const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", "metadataEditor.bundle.js"));
-    const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", "metadataEditor.css"));
     const resourceSvgUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "resources", "dark", "resource.svg"));
     const sequenceSvgUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "resources", "dark", "sequence.svg"));
     const templateSvgUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "resources", "dark", "template.svg"));
@@ -450,7 +449,6 @@ export class FormPreviewer {
                  worker-src ${webview.cspSource} blob:;
                  script-src ${webview.cspSource} 'nonce-${nonce}';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="${styleUri}" rel="stylesheet" />
   <title>Form preview</title>
 
   <script nonce="${nonce}">

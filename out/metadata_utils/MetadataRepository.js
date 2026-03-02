@@ -17,8 +17,8 @@ class MetadataRepository {
         const scan = await (0, MetadataScanner_1.scanMetadataRoot)(root);
         const parsed = [];
         const errors = [...scan.errors];
-        // Парсим батчами параллельно (ускорение при большом количестве объектов)
-        const BATCH_SIZE = 16;
+        // Парсим батчами параллельно (32 объекта — баланс скорость/память на больших проектах)
+        const BATCH_SIZE = 32;
         for (let i = 0; i < scan.objects.length; i += BATCH_SIZE) {
             const batch = scan.objects.slice(i, i + BATCH_SIZE);
             const results = await Promise.allSettled(batch.map(ref => (0, UniversalMetadataParser_1.parseMetadataObject)(ref)));

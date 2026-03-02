@@ -22,11 +22,14 @@ export class QueryStringEditor {
   private webpanel: vscode.WebviewPanel | undefined;
   private currentDocument: vscode.TextDocument | undefined;
   private currentRange: vscode.Range | undefined;
-  private readonly metadataRepository = new MetadataRepository(30_000);
-  private metadataTreeCache: QueryMetadataNode | null = null;
-  private metadataCache: { registers: string[]; referenceTypes: string[] } | null = null;
+  /** TTL 5 минут — дерево метаданных редко меняется при редактировании запросов */
+  private readonly metadataRepository = new MetadataRepository(300_000);
+  private metadataTreeCacheByRoot = new Map<string, QueryMetadataNode | null>();
+  private metadataCacheByRoot = new Map<string, { registers: string[]; referenceTypes: string[] }>();
+  private lastConfigRoot: string | null = null;
   private webviewReady: boolean = false;
   private pendingInitMessage: { type: string; payload: any } | null = null;
+  private pendingMetadataTree: QueryMetadataNode | null = null;
   private fallbackTimeout: NodeJS.Timeout | null = null;
 
   /**
@@ -66,10 +69,10 @@ export class QueryStringEditor {
     
     // Ищем типичные директории конфигурации
     const knownTypeDirs = [
-      'Catalogs', 'Documents', 'CommonModules', 'InformationRegisters',
-      'AccumulationRegisters', 'Reports', 'DataProcessors', 'Enums',
+      'Catalogs', 'Documents', 'DocumentJournals', 'CommonModules', 'InformationRegisters',
+      'AccumulationRegisters', 'Reports', 'DataProcessors', 'Enums', 'Constants',
       'ChartsOfCharacteristicTypes', 'ChartsOfAccounts', 'ChartsOfCalculationTypes',
-      'BusinessProcesses', 'Tasks', 'ExchangePlans', 'DefinedTypes'
+      'BusinessProcesses', 'Tasks', 'ExchangePlans', 'DefinedTypes', 'FilterCriteria'
     ];
     
     for (let i = parts.length - 1; i >= 0; i--) {
@@ -88,7 +91,8 @@ export class QueryStringEditor {
    * Сканирование метаданных для автодополнения
    */
   private async scanMetadataForWebview(configRoot: string): Promise<{ registers: string[]; referenceTypes: string[] }> {
-    if (this.metadataCache) return this.metadataCache;
+    const cached = this.metadataCacheByRoot.get(configRoot);
+    if (cached) return cached;
 
     const registers: string[] = [];
     const referenceTypes: string[] = [];
@@ -162,15 +166,17 @@ export class QueryStringEditor {
       // ignore
     }
 
-    this.metadataCache = { registers, referenceTypes };
-    return this.metadataCache;
+    const result = { registers, referenceTypes };
+    this.metadataCacheByRoot.set(configRoot, result);
+    return result;
   }
 
   /**
    * Загрузка дерева метаданных для редактора
    */
   private async loadMetadataTreeForWebview(configRoot: string): Promise<QueryMetadataNode | null> {
-    if (this.metadataTreeCache) return this.metadataTreeCache;
+    const cached = this.metadataTreeCacheByRoot.get(configRoot);
+    if (cached !== undefined) return cached;
 
     // Только типы, используемые в запросах 1С
     const typeDirToQuery: Record<string, { typeLabel: string; prefix: string }> = {
@@ -475,19 +481,19 @@ export class QueryStringEditor {
 
       const mapped = toWeb(tree, {});
       if (!mapped) {
-        // Если все метаданные отфильтрованы, возвращаем пустое дерево
-        this.metadataTreeCache = {
+        const emptyTree: QueryMetadataNode = {
           id: 'root',
           label: 'Configuration',
           kind: 'root',
           children: [],
         };
-        return this.metadataTreeCache;
+        this.metadataTreeCacheByRoot.set(configRoot, emptyTree);
+        return emptyTree;
       }
-      this.metadataTreeCache = mapped;
+      this.metadataTreeCacheByRoot.set(configRoot, mapped);
       return mapped;
     } catch {
-      this.metadataTreeCache = null;
+      this.metadataTreeCacheByRoot.set(configRoot, null);
       return null;
     }
   }
@@ -510,6 +516,7 @@ export class QueryStringEditor {
 
     // Определяем корень конфигурации
     const configRoot = this.getConfigRoot(document.fileName);
+    this.lastConfigRoot = configRoot;
 
     let panel: vscode.WebviewPanel | undefined = this.webpanel;
     if (!panel) {
@@ -530,9 +537,9 @@ export class QueryStringEditor {
       this.webpanel = panel;
       panel.onDidDispose(() => {
         this.webpanel = undefined;
-        // Сбрасываем кэш при закрытии
-        this.metadataCache = null;
-        this.metadataTreeCache = null;
+        this.webviewReady = false;
+        this.pendingMetadataTree = null;
+        // Кэш НЕ сбрасываем — сохраняется между открытиями редактора
       });
       panel.webview.html = this.getHtmlForWebview(panel.webview, extensionUri);
 
@@ -565,9 +572,23 @@ export class QueryStringEditor {
             panel.webview.postMessage(this.pendingInitMessage);
             this.pendingInitMessage = null;
           }
+          // Дерево могло загрузиться до готовности webview — отправляем если есть
+          if (this.pendingMetadataTree !== null && panel) {
+            panel.webview.postMessage({ type: "metadataTreeReady", metadataTree: this.pendingMetadataTree });
+            this.pendingMetadataTree = null;
+          }
           return;
         }
         
+        if (message.type === 'requestMetadataTree' && panel) {
+          // Webview запрашивает дерево (на случай потери сообщения metadataTreeReady)
+          const tree = this.pendingMetadataTree ?? (this.lastConfigRoot ? this.metadataTreeCacheByRoot.get(this.lastConfigRoot) : undefined) ?? null;
+          if (tree !== null) {
+            panel.webview.postMessage({ type: "metadataTreeReady", metadataTree: tree });
+            this.pendingMetadataTree = null;
+          }
+          return;
+        }
         if (message.type === 'saveQuery') {
           await this.handleSaveQuery(message.payload);
         } else if (message.type === 'cancel') {
@@ -583,59 +604,50 @@ export class QueryStringEditor {
       panel.reveal(vscode.ViewColumn.Active, false);
     }
 
-    // Загружаем метаданные (scanMetadataForWebview — быстро, без парсинга XML)
-    try {
-      const metadata = await this.scanMetadataForWebview(configRoot);
+    const config = vscode.workspace.getConfiguration();
+    const debugMode = config.get<boolean>('metadataViewer.debugMode', false);
 
-      const config = vscode.workspace.getConfiguration();
-      const debugMode = config.get<boolean>('metadataViewer.debugMode', false);
+    // КРИТИЧНО: Отправляем init сразу с минимальными данными — редактор открывается без ожидания.
+    // scanMetadataForWebview может долго выполняться или зависнуть при неверном configRoot.
+    const initMessage = {
+      type: "standaloneQueryEditorInit",
+      payload: {
+        queryText: queryText || '',
+        metadata: { registers: [], referenceTypes: [] },
+        metadataTree: null as QueryMetadataNode | null,
+        debugMode,
+      },
+    };
 
-      // Ленивая загрузка: сначала отправляем init с metadataTree: null, редактор открывается сразу
-      const initMessage = {
-        type: "standaloneQueryEditorInit",
-        payload: {
-          queryText: queryText || '',
-          metadata,
-          metadataTree: null as QueryMetadataNode | null,
-          debugMode,
-        },
-      };
-
-      if (!this.webviewReady) {
-        this.pendingInitMessage = initMessage;
-      } else {
-        panel.webview.postMessage(initMessage);
-      }
-
-      // Дерево метаданных загружаем в фоне и отправляем отдельным сообщением
-      void this.loadMetadataTreeForWebview(configRoot).then((metadataTree) => {
-        if (this.webpanel) {
-          this.webpanel.webview.postMessage({ type: "metadataTreeReady", metadataTree });
-        }
-      });
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error);
-      vscode.window.showErrorMessage(`Ошибка загрузки метаданных: ${msg}`);
-
-      const config = vscode.workspace.getConfiguration();
-      const debugMode = config.get<boolean>('metadataViewer.debugMode', false);
-
-      const initMessage = {
-        type: "standaloneQueryEditorInit",
-        payload: {
-          queryText: queryText || '',
-          metadata: { registers: [], referenceTypes: [] },
-          metadataTree: null,
-          debugMode,
-        },
-      };
-
-      if (!this.webviewReady) {
-        this.pendingInitMessage = initMessage;
-      } else {
-        panel.webview.postMessage(initMessage);
-      }
+    if (!this.webviewReady) {
+      this.pendingInitMessage = initMessage;
+    } else {
+      panel.webview.postMessage(initMessage);
     }
+
+    // Метаданные загружаем в фоне — обновляем только metadata, дерево не трогаем
+    void this.scanMetadataForWebview(configRoot).then((metadata) => {
+      if (!this.webpanel) return;
+      if (this.webviewReady) {
+        this.webpanel.webview.postMessage({ type: "metadataUpdate", metadata });
+      } else {
+        this.pendingInitMessage = {
+          type: "standaloneQueryEditorInit",
+          payload: { queryText: queryText || '', metadata, metadataTree: null, debugMode },
+        };
+      }
+    }).catch(() => {
+      // Игнорируем ошибки сканирования — редактор уже открыт с пустыми метаданными
+    });
+
+    void this.loadMetadataTreeForWebview(configRoot).then((metadataTree) => {
+      if (!this.webpanel) return;
+      this.pendingMetadataTree = metadataTree;
+      if (this.webviewReady) {
+        this.webpanel.webview.postMessage({ type: "metadataTreeReady", metadataTree });
+        this.pendingMetadataTree = null;
+      }
+    });
   }
 
   /**
@@ -679,9 +691,6 @@ export class QueryStringEditor {
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(extensionUri, 'media', 'metadataEditor.bundle.js')
     );
-    const styleUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(extensionUri, 'media', 'metadataEditor.css')
-    );
 
     const nonce = getNonce();
 
@@ -698,7 +707,6 @@ export class QueryStringEditor {
              worker-src ${webview.cspSource} blob:;
              connect-src ${webview.cspSource};
              script-src 'nonce-${nonce}';">
-  <link href="${styleUri}" rel="stylesheet">
   <title>Редактор запроса</title>
   <style nonce="${nonce}">
     /* Модальный стиль для редактора */

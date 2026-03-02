@@ -450,7 +450,6 @@ class DcsEditor {
     }
     getHtmlForWebview(webview, extensionUri) {
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", "metadataEditor.bundle.js"));
-        const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", "metadataEditor.css"));
         const nonce = getNonce();
         return `<!DOCTYPE html>
 <html lang="ru">
@@ -465,7 +464,6 @@ class DcsEditor {
                  worker-src ${webview.cspSource} blob:;
                  script-src ${webview.cspSource} 'nonce-${nonce}';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="${styleUri}">
   <title>Редактор СКД</title>
 </head>
 <body>

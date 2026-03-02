@@ -44,6 +44,14 @@ export const StandaloneQueryEditor: React.FC<StandaloneQueryEditorProps> = ({ vs
         setQueryText(message.payload.queryText || '');
         setQueryMetadataCompletionTree(message.payload.metadataTree ?? null);
         setIsLoading(false);
+        // Если дерево не пришло в init — запрашиваем (fallback при потере metadataTreeReady)
+        if (message.payload?.metadataTree == null) {
+          setTimeout(() => vscode.postMessage({ type: 'requestMetadataTree' }), 500);
+        }
+      }
+
+      if (message.type === 'metadataUpdate') {
+        setData((prev) => ({ ...prev, metadata: message.metadata ?? prev.metadata }));
       }
 
       if (message.type === 'metadataTreeReady') {
